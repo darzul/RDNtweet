@@ -16,6 +16,32 @@ char ** init_2d_char_tab (int nb_row, int row_len)
 	return tab;
 }
 
+int ** init_2d_int_tab (int nb_row, int row_len)
+{
+	int i;
+	int **tab = malloc (sizeof (int *) * nb_row);
+
+	for (i=0; i < nb_row; i++)
+	{
+		tab [i] = malloc (sizeof (int) * row_len);
+	}
+
+	return tab;
+}
+
+float ** init_2d_float_tab (int nb_row, int row_len)
+{
+	int i;
+	float **tab = malloc (sizeof (float *) * nb_row);
+
+	for (i=0; i < nb_row; i++)
+	{
+		tab [i] = malloc (sizeof (float) * row_len);
+	}
+
+	return tab;
+}
+
 void free_2d_tab (void **tab, int tab_len)
 {
 	int i;
@@ -46,6 +72,36 @@ void file_to_tab (char *file_name, char ** tab, int tab_len, int max_len_per_row
 
 	free (phrase);
 	fclose (file);
+}
+
+void tab_string_to_file (FILE *file, char **tab, int tab_len)
+{
+	int i;
+
+	for (i=0; i < tab_len; i++)
+	{
+		if (tab [i] != NULL)
+		{
+			fprintf (file, "%s", tab[i]);
+		}
+	}
+}
+
+void tab_float_to_file (FILE *file, float **tab, int tab_len, int row_len, char *result)
+{
+	int i, j;
+
+	for (i=0; i < tab_len; i++)
+	{
+		if (tab [i] != NULL)
+		{
+			for (j=0; j < row_len; j++)
+			{
+				fprintf (file, "%f ", tab[i][j]);
+			}
+			fprintf (file, "\n%s\n", result);
+		}
+	}
 }
 
 /*
