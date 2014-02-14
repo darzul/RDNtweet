@@ -17,6 +17,8 @@ int count_tweets_from_tab (char **tweets, int nb_tweet);
 
 void removeDouble (char ** tweetTable, int size);
 void removeURL(char ** tweetTable, int size);
+void removeHashTag(char ** tweetTable, int size);
+void removePseudo (char ** tweetTable, int size);
 int str_remove_word (char *text, char *word);
 
 char * lang_to_result (char *lang);

@@ -23,13 +23,15 @@ int main (int argc, char *argv[])
 
 	removeDouble (tweets, nb_tweet);
 	removeURL (tweets, nb_tweet);
+	removeHashTag (tweets, nb_tweet);
+	removePseudo (tweets, nb_tweet);
 
 	float **frq_tab = create_frq_tab (tweets, nb_tweet);
-	//print_2d_string_tab (tweets, nb_tweet);
+	print_2d_string_tab (tweets, nb_tweet);
 
-	int nb_data = count_tweets_from_tab (tweets, nb_tweet);
+	//int nb_data = count_tweets_from_tab (tweets, nb_tweet);
 
-	data_to_file (argv [2], frq_tab, nb_tweet, nb_data, NB_INPUT, NB_OUTPUT, result);
+	//data_to_file (argv [2], frq_tab, nb_tweet, nb_data, NB_INPUT, NB_OUTPUT, result);
 
 	free (result);
 	free_2d_tab ( (void **) tweets, nb_tweet);
@@ -149,7 +151,37 @@ void removeURL(char ** tweetTable, int size)
 
 		if (tweetTable[i] != NULL)
 		{
-			while (str_remove_word (tweetTable[i], "http://"))
+			while (str_remove_word (tweetTable[i], "http"))
+			{
+			}
+		}
+	}
+}
+
+void removeHashTag(char ** tweetTable, int size)
+{
+	int i;
+
+	for (i =0; i < size; i++){
+
+		if (tweetTable[i] != NULL)
+		{
+			while (str_remove_word (tweetTable[i], "#"))
+			{
+			}
+		}
+	}
+}
+
+void removePseudo (char ** tweetTable, int size)
+{
+	int i;
+
+	for (i =0; i < size; i++){
+
+		if (tweetTable[i] != NULL)
+		{
+			while (str_remove_word (tweetTable[i], "@"))
 			{
 			}
 		}
