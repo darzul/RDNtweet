@@ -27,11 +27,11 @@ int main (int argc, char *argv[])
 	removePseudo (tweets, nb_tweet);
 
 	float **frq_tab = create_frq_tab (tweets, nb_tweet);
-	print_2d_string_tab (tweets, nb_tweet);
+	//print_2d_string_tab (tweets, nb_tweet);
 
-	//int nb_data = count_tweets_from_tab (tweets, nb_tweet);
+	int nb_data = count_tweets_from_tab (tweets, nb_tweet);
 
-	//data_to_file (argv [2], frq_tab, nb_tweet, nb_data, NB_INPUT, NB_OUTPUT, result);
+	data_to_file (argv [2], frq_tab, nb_tweet, nb_data, NB_INPUT, NB_OUTPUT, result);
 
 	free (result);
 	free_2d_tab ( (void **) tweets, nb_tweet);
@@ -115,6 +115,7 @@ float * count_frq_char_normalized (char *string)
 	for (i=0; i < 256; i++)
 	{
 		frq_char [i] /= nb_char;
+		frq_char [i] = (frq_char [i] * 2) - 1;
 	}
 
 	return frq_char;
@@ -233,7 +234,7 @@ void data_to_file (char *file_name, float **frq_tab, int nb_tweet, int nb_data, 
 	FILE *file = fopen (file_name, "w+");
 
 	fprintf (file, "%d %d %d\n", nb_data, nb_input, nb_output);
-	tab_float_to_file (file, frq_tab, nb_tweet, nb_input, result);
+	tab_float_to_file (file, frq_tab, nb_tweet, ASCII_LEN, result);
 
 	fclose (file);
 }

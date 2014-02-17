@@ -6,8 +6,10 @@
 #include "array.h"
 
 #define CHAR_MAX_PER_TWEET 200
-#define NB_INPUT 256
+#define NB_INPUT 27
 #define NB_OUTPUT 7
+
+static int ASCII_LEN = 256;
 
 float ** create_frq_tab (char **tweets, int nb_tweet);
 float * count_frq_char_normalized (char *string);
