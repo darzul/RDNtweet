@@ -25,13 +25,13 @@ int main (int argc, char *argv[])
 	removeURL (tweets, nb_tweet);
 	removeHashTag (tweets, nb_tweet);
 	removePseudo (tweets, nb_tweet);
-
+ 
 	float **frq_tab = create_frq_tab (tweets, nb_tweet);
-	print_2d_string_tab (tweets, nb_tweet);
+	//print_2d_string_tab (tweets, nb_tweet);
 
-	//int nb_data = count_tweets_from_tab (tweets, nb_tweet);
+	int nb_data = count_tweets_from_tab (tweets, nb_tweet);
 
-	//data_to_file (argv [2], frq_tab, nb_tweet, nb_data, NB_INPUT, NB_OUTPUT, result);
+	data_to_file (argv [2], frq_tab, nb_tweet, nb_data, NB_INPUT, NB_OUTPUT, result);
 
 	free (result);
 	free_2d_tab ( (void **) tweets, nb_tweet);

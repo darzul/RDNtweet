@@ -3,14 +3,14 @@ FLAGS += -Wall -g
 PLIBS = array.o
 CLIBS = -lfann -lm -L/usr/local/lib
 
-all: parser.exe bestTrain.exe test.exe build_RDN.exe
+all: parser.exe bestTrain.exe test.exe
 
-test.exe : 
+test.exe : test.c
 	#
 	### [Compiling] test.c ###
 	$(CC) $(FLAGS) test.c -o test.exe $(CLIBS)
 
-bestTrain.exe :
+bestTrain.exe : bestTrain.c
 	#
 	### [Compiling] bestTrain.c ###
 	$(CC) $(FLAGS) bestTrain.c -o bestTrain.exe $(CLIBS)
@@ -24,11 +24,6 @@ array.o:
 	#
 	### [Compiling] array.c ###
 	$(CC) $(FLAGS) -c array.c -o array.o
-
-build_RDN.exe:
-	#
-	### [Compiling] build_RDN_tweet.c ###
-	$(CC) $(FLAGS) $(FANN) build_RDN.c -o build_RDN.exe
 
 clean:
 	rm *.exe *.o
