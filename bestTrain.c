@@ -26,7 +26,7 @@ void train(struct fann *ann, char* trainFile, char *testFile, char *netFile , un
 		error = fann_train_epoch(ann, trainData); //fait une epoque, ann : le réseaux créer, erreur : l'erreur d'apprentissage
                
 		//Toute les 10 epoques 
-		if(epochs_between_reports && (i % epochs_between_reports == 0 || error < desired_error)){
+		if(i % epochs_between_reports == 0 || error < desired_error){
                         	
 			fann_test_data(ann,testData);// teste le reseau sur les donnée de test
 	
@@ -34,7 +34,7 @@ void train(struct fann *ann, char* trainFile, char *testFile, char *netFile , un
 			if (testError < testErrorBest) {
 				testErrorBest = testError;
 				annBest = fann_copy(ann);
-				printf("Epochs     %8d. testError : %f : \n", i, testError);
+				printf("Epochs     %8d; trainError : %f; testError : %f;\n", i, error,testError);
 			}		
                 	}
 		if(error < desired_error){
@@ -54,9 +54,9 @@ int main(int argc , char **argv) {
 	unsigned int num_output;
 	const unsigned int num_layers=3 ; //input, hidden and output
 	unsigned int num_neurons_hidden;
-	const float desired_error = 0.00001;
+	const float desired_error = 0.001;
 	const unsigned int max_iterations = 1000;
-	const unsigned int iterations_between_reports = 10;
+	const unsigned int iterations_between_reports = 100;
 
 	if (argc != 5) {
 		printf("usage : train trainFile.txt testFile.txt ouputNetBasename nbrHiddenNeurons\n");

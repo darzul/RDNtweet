@@ -25,7 +25,7 @@ int main (int argc, char *argv[])
 	removeURL (tweets, nb_tweet);
 	removeHashTag (tweets, nb_tweet);
 	removePseudo (tweets, nb_tweet);
-
+ 
 	float **frq_tab = create_frq_tab (tweets, nb_tweet);
 	//print_2d_string_tab (tweets, nb_tweet);
 
