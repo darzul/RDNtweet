@@ -1,5 +1,6 @@
 #include "parser.h"
 
+
 int main (int argc, char *argv[]) 
 {
 	if (argc != 4 || strlen (argv [3]) != 2)
@@ -26,7 +27,8 @@ int main (int argc, char *argv[])
 	removeHashTag (tweets, nb_tweet);
 	removePseudo (tweets, nb_tweet);
  
-	float **frq_tab = create_frq_tab (tweets, nb_tweet);
+	//float **frq_tab = create_frq_tab (tweets, nb_tweet);
+	float **frq_tab = create_hog(tweets, nb_tweet);
 	//print_2d_string_tab (tweets, nb_tweet);
 
 	int nb_data = count_tweets_from_tab (tweets, nb_tweet);
@@ -70,6 +72,28 @@ int count_tweets_from_tab (char **tweets, int nb_tweet)
 	return nb_data;
 }
 
+float **  create_hog (char **tweets, int nb_tweet)
+{
+	float **frq_tab = init_2d_float_tab (nb_tweet, HOG_SIZE);
+	int i;
+
+	for (i=0; i<nb_tweet; i++)
+	{
+		if (tweets [i] != NULL)
+		{
+			frq_tab [i] = calcul_hog_tweet_normalized (tweets [i]);
+		}
+		else
+		{
+			free (frq_tab [i]);
+			frq_tab [i] = NULL;
+		}
+	}
+
+	return frq_tab;
+}
+
+
 float ** create_frq_tab (char **tweets, int nb_tweet)
 {
 	float **frq_tab = init_2d_float_tab (nb_tweet, 256);
@@ -89,6 +113,85 @@ float ** create_frq_tab (char **tweets, int nb_tweet)
 	}
 
 	return frq_tab;
+}
+
+
+float * calcul_hog_tweet_normalized (char *string) {
+
+	float * hog = malloc (sizeof (int)*HOG_SIZE);
+	int i;
+
+	for (i=0; i<HOG_SIZE; i++)
+	{
+		hog [i] = 0;
+	}
+	int diviseur = 256/(HOG_SIZE);
+	int diff;
+	float modulo;
+	int entiere;
+	for (i=0; i<CHAR_MAX_PER_TWEET && string[i] != '\0' ; i++)
+	{
+		diff = ((unsigned char) string[i+1] )- ((unsigned char) string[i]);
+		if (diff < 0 ){
+			diff = -diff;
+		}
+		/*
+		Plz choose between 1 or 2 
+		*/
+		
+		/*** 1 ***/
+		entiere = diff/diviseur;
+		hog[entiere] +=1;
+		
+		
+		/**** 2 ***/
+		/*
+		entiere = diff/diviseur;
+		modulo = diff%diviseur - diviseur/2 + 0.5; // valeur between [-3.5 ; 3.5]
+		if (modulo < 0 ){
+			modulo = -modulo; //value between [0 ;3.5]
+		}
+		hog[entiere] +=(float) 1 - (float)modulo/(diviseur/2);
+		*/
+		
+		
+		//print_hog (hog);
+	}
+
+	hog = normalize_hog (hog);
+	return hog;
+	
+
+}
+
+
+float *  normalize_hog (float * hog){
+	double carre = 0 ; 
+	int i;
+	for (i=0; i < HOG_SIZE ;i ++ ){
+		carre += pow(hog[i], 2);
+	}
+	carre = sqrt (carre);
+	
+	for (i=0; i < HOG_SIZE ;i ++ ){
+		hog[i] = hog[i]/carre;
+	}
+
+	return hog;
+}
+
+void print_hog (float * hog){
+
+int i;
+
+for (i=0; i< HOG_SIZE ; i++){
+
+	printf ("%f ",hog[i]);
+
+
+}
+printf ("\n");
+
 }
 
 float * count_frq_char_normalized (char *string)
@@ -235,6 +338,7 @@ void data_to_file (char *file_name, float **frq_tab, int nb_tweet, int nb_data, 
 
 	fprintf (file, "%d %d %d\n", nb_data, nb_input, nb_output);
 	tab_float_to_file (file, frq_tab, nb_tweet, ASCII_LEN, result);
+	
 
 	fclose (file);
 }

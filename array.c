@@ -99,10 +99,13 @@ void tab_float_to_file (FILE *file, float **tab, int tab_len, int row_len, char 
 			{
 				// 32 -> espace
 				// 97-122 -> a-z
-				if ( j == 32 || (j >= 97 && j <= 122) )
+				/*if ( j == 32 || (j >= 97 && j <= 122) )
 				{
 					fprintf (file, "%f ", tab[i][j]);
-				}
+				}*/
+				
+				fprintf (file, "%f ", tab[i][j]);
+				
 			}
 			fprintf (file, "%s\n", result);
 		}
