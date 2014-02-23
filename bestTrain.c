@@ -54,9 +54,9 @@ int main(int argc , char **argv) {
 	unsigned int num_output;
 	const unsigned int num_layers=3 ; //input, hidden and output
 	unsigned int num_neurons_hidden;
-	const float desired_error = 0.001;
-	const unsigned int max_iterations = 1000;
-	const unsigned int iterations_between_reports = 100;
+	const float desired_error = 0.0001;
+	const unsigned int max_iterations = 500;
+	const unsigned int iterations_between_reports = 10;
 
 	if (argc != 5) {
 		printf("usage : train trainFile.txt testFile.txt ouputNetBasename nbrHiddenNeurons\n");

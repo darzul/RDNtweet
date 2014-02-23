@@ -26,14 +26,40 @@ print " $total data vector used\n\n";
 print "Confusion Matrix : \n";
 print " predicted: ";
 $meanPerf = 0;
-for($i=0;$i<$classNbr;$i++) {
-  print "$i     ";    
-}
-print "\n";
+  print "fr    ";  
+  print "en    ";  
+  print "de    ";  
+  print "es    ";  
+  print "pt    ";  
+  print "it    ";  
+  print "tr    ";  
+  print "\n";
 
 $realClassNbr = 0; # some classes may not be present in dataset
 for($i=0;$i<$classNbr;$i++) {
-  print "real $i      ";
+  
+  if ($i == 0){
+     print "real fr      ";
+  }
+  elsif ($i == 1){
+     print "real en      ";
+  }
+  elsif ($i == 2){
+     print "real de      ";
+  }
+  elsif ($i == 3){
+     print "real es      ";
+  }
+  elsif ($i == 4){
+     print "real pt      ";
+  }
+  elsif ($i == 5){
+     print "real it      ";
+  }
+  elsif ($i == 6){
+     print "real tr      ";
+  }
+
   $total = 0;   
   for($j=0;$j<$classNbr;$j++) { # normalisation
     $total += $m[$i][$j];   
