@@ -115,7 +115,7 @@ float * count_frq_char_normalized (char *string)
 	for (i=0; i < 256; i++)
 	{
 		frq_char [i] /= nb_char;
-		frq_char [i] = (frq_char [i] * 2) - 1;
+		//frq_char [i] = (frq_char [i] * 2) - 1;
 	}
 
 	return frq_char;
