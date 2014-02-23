@@ -87,6 +87,38 @@ void tab_string_to_file (FILE *file, char **tab, int tab_len)
 	}
 }
 
+void tab_floatx2_to_file (char * file_name,float ** ascii, float ** hog,int ascii_size, int hog_size, int nbr_tweet, int nbr_data,  char *result){
+	
+	int i, j;
+
+	FILE *file = fopen (file_name, "w+");
+
+	fprintf (file, "%d %d 7\n", nbr_data, ascii_size+hog_size);
+	
+		for (i=0; i < nbr_tweet; i++)
+		{
+			if (ascii [i] != NULL)
+			{
+				for (j=0; j <  ASCII_LEN ; j++)
+				{
+
+					fprintf (file, "%f ", ascii[i][j]);
+				}
+			
+		
+				for (j=0; j <hog_size; j++)
+				{
+			
+					fprintf (file, "%f ", hog[i][j]);
+
+				}
+		
+			fprintf (file, "%s\n", result);
+			}
+		}
+	fclose(file);
+}
+
 void tab_float_to_file (FILE *file, float **tab, int tab_len, int row_len, char *result)
 {
 	int i, j;

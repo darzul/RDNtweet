@@ -20,6 +20,7 @@ int main (int argc, char *argv[])
 	int nb_tweet = count_tweets_from_file (argv [1]);
 	char **tweets = init_2d_char_tab (nb_tweet, CHAR_MAX_PER_TWEET);
 
+	
 	file_to_tab (argv[1], tweets, nb_tweet, CHAR_MAX_PER_TWEET);
 
 	removeDouble (tweets, nb_tweet);
@@ -27,17 +28,22 @@ int main (int argc, char *argv[])
 	removeHashTag (tweets, nb_tweet);
 	removePseudo (tweets, nb_tweet);
  
-	//float **frq_tab = create_frq_tab (tweets, nb_tweet);
-	float **frq_tab = create_hog(tweets, nb_tweet);
+	float **frq_tab = create_frq_tab (tweets, nb_tweet);
+	float **hog_tab = create_hog(tweets, nb_tweet);
 	//print_2d_string_tab (tweets, nb_tweet);
 
 	int nb_data = count_tweets_from_tab (tweets, nb_tweet);
 
-	data_to_file (argv [2], frq_tab, nb_tweet, nb_data, NB_INPUT, NB_OUTPUT, result);
 
+
+	tab_floatx2_to_file (argv [2],frq_tab, hog_tab,ASCII_SIZE, HOG_SIZE, nb_tweet,nb_data, result);
+	//data_to_file (argv [2], hog_tab, nb_tweet, nb_data, HOG_SIZE, NB_OUTPUT, result);
+	
+	
 	free (result);
 	free_2d_tab ( (void **) tweets, nb_tweet);
 	free_2d_tab ( (void **) frq_tab, nb_tweet);
+	free_2d_tab ( (void **) hog_tab, nb_tweet);
 
 	return 0;
 }
@@ -142,7 +148,7 @@ float * calcul_hog_tweet_normalized (char *string) {
 		/*** 1 ***/
 		entiere = diff/diviseur;
 		hog[entiere] +=1;
-		
+		//printf("%d ",entiere);
 		
 		/**** 2 ***/
 		/*
@@ -159,9 +165,26 @@ float * calcul_hog_tweet_normalized (char *string) {
 	}
 
 	hog = normalize_hog (hog);
+	//hog = centrage(hog, HOG_SIZE);
 	return hog;
 	
 
+}
+float * centrage (float * tab, int size){
+
+
+	int i;
+	float max;
+	for (i=0, max = 0; i< size; i++ ){
+		if (tab[i] > max ){
+			max = tab[i];
+		}
+	}
+	for (i=0; i< size; i++ ){
+		tab[i]=((tab[i]/max)*2)-1;
+	
+	}
+	return tab;
 }
 
 
@@ -176,6 +199,7 @@ float *  normalize_hog (float * hog){
 	for (i=0; i < HOG_SIZE ;i ++ ){
 		hog[i] = hog[i]/carre;
 	}
+
 
 	return hog;
 }
@@ -214,13 +238,12 @@ float * count_frq_char_normalized (char *string)
 	}
 
 	int nb_char = i;
-
+	
 	for (i=0; i < 256; i++)
 	{
 		frq_char [i] /= nb_char;
-		frq_char [i] = (frq_char [i] * 2) - 1;
 	}
-
+	//frq_char = centrage (frq_char,256);
 	return frq_char;
 }
 
@@ -337,6 +360,7 @@ void data_to_file (char *file_name, float **frq_tab, int nb_tweet, int nb_data, 
 	FILE *file = fopen (file_name, "w+");
 
 	fprintf (file, "%d %d %d\n", nb_data, nb_input, nb_output);
+	
 	tab_float_to_file (file, frq_tab, nb_tweet, ASCII_LEN, result);
 	
 
@@ -347,6 +371,7 @@ char * lang_to_result (char *lang)
 {
 
 	char *result = malloc (sizeof (char)*14);
+
 
 	if (strcmp (lang, "fr") == 0)
 	{

@@ -6,13 +6,14 @@
 #include "array.h"
 #include <math.h>
 
-#define HOG_SIZE 32
 #define CHAR_MAX_PER_TWEET 200
-#define NB_INPUT 32
 #define NB_OUTPUT 7
 
-static int ASCII_LEN = 32;
+static int ASCII_SIZE = 256;
+static int HOG_SIZE = 64;
 
+
+float * centrage (float * tab, int size);
 float **  create_hog (char **tweets, int nb_tweet);
 void print_hog (float * hog);
 float *  normalize_hog (float * hog);

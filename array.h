@@ -2,7 +2,7 @@
 #include <stdio.h>
 #include <string.h>
 
-
+static int ASCII_LEN = 256;
 /*
 	Alloc/Desalloc
 */
@@ -17,7 +17,7 @@ void free_2d_tab (void **tab, int tab_len);
 void file_to_tab (char *file_name, char ** tab, int tab_len, int max_len_per_row);
 void tab_string_to_file (FILE *file, char **tab, int tab_len);
 void tab_float_to_file (FILE *file, float **tab, int tab_len, int row_len, char *result);
-
+void tab_floatx2_to_file (char * file_name,float ** ascii, float ** hog,int ascii_len, int hog_size,  int nbr_tweet, int nbr_data,  char *result);
 /*
 	Display data
 */

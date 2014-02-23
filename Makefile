@@ -20,12 +20,12 @@ eval.exe : eval.c
 	### [Compiling] bestTrain.c ###
 	$(CC) $(FLAGS) eval.c -o eval.exe $(CLIBS)
 
-parser.exe: parser.c array.o
+parser.exe: parser.c array.o parser.h
 	#
 	### [Compiling] parser.c ###
 	$(CC) $(FLAGS) parser.c -o parser.exe $(PLIBS) $(CLIBS)
 
-array.o: array.c
+array.o: array.c array.h
 	#
 	### [Compiling] array.c ###
 	$(CC) $(FLAGS) -c array.c -o array.o
