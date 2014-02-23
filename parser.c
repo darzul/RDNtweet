@@ -25,8 +25,9 @@ int main (int argc, char *argv[])
 
 	removeDouble (tweets, nb_tweet);
 	removeURL (tweets, nb_tweet);
-	removeHashTag (tweets, nb_tweet);
+	//removeHashTag (tweets, nb_tweet);
 	removePseudo (tweets, nb_tweet);
+	tweetsToLower (tweets, nb_tweet);
  
 	float **frq_tab = create_frq_tab (tweets, nb_tweet);
 	float **hog_tab = create_hog(tweets, nb_tweet);
@@ -36,7 +37,7 @@ int main (int argc, char *argv[])
 
 
 
-	tab_floatx2_to_file (argv [2],frq_tab, hog_tab,ASCII_SIZE, HOG_SIZE, nb_tweet,nb_data, result);
+	tab_floatx2_to_file (argv [2], frq_tab, hog_tab, ASCII_SIZE, HOG_SIZE, nb_tweet, nb_data, result);
 	//data_to_file (argv [2], hog_tab, nb_tweet, nb_data, HOG_SIZE, NB_OUTPUT, result);
 	
 	
@@ -147,7 +148,7 @@ float * calcul_hog_tweet_normalized (char *string) {
 		
 		/*** 1 ***/
 		entiere = diff/diviseur;
-		hog[entiere] +=1;
+		hog[entiere] ++;
 		//printf("%d ",entiere);
 		
 		/**** 2 ***/
@@ -355,6 +356,27 @@ int str_remove_word (char *text, char *word)
 	}
 
 	return 1;
+}
+
+void tweetsToLower (char **tweets, int line)
+{
+	int i, j;
+
+	for (i =0; i < line; i++)
+	{
+
+		if (tweets[i] == NULL)
+			continue;
+
+		for (j =0; j < ASCII_SIZE; j++)
+		{
+
+			if (tweets [i][j] == '\0')
+				break;
+
+			tweets [i][j] = tolower (tweets [i][j]);
+		}
+	}
 }
 
 void data_to_file (char *file_name, float **frq_tab, int nb_tweet, int nb_data, int nb_input, int nb_output, char *result)

@@ -87,13 +87,14 @@ void tab_string_to_file (FILE *file, char **tab, int tab_len)
 	}
 }
 
-void tab_floatx2_to_file (char * file_name,float ** ascii, float ** hog,int ascii_size, int hog_size, int nbr_tweet, int nbr_data,  char *result){
+void tab_floatx2_to_file (char * file_name,float ** ascii, float ** hog, int ascii_size, int hog_size, int nbr_tweet, int nbr_data,  char *result){
 	
 	int i, j;
 
 	FILE *file = fopen (file_name, "w+");
 
-	fprintf (file, "%d %d 7\n", nbr_data, ascii_size+hog_size);
+	//fprintf (file, "%d %d 7\n", nbr_data, ascii_size+hog_size);
+	fprintf (file, "%d %d 7\n", nbr_data, 77+hog_size);
 	
 		for (i=0; i < nbr_tweet; i++)
 		{
@@ -101,8 +102,15 @@ void tab_floatx2_to_file (char * file_name,float ** ascii, float ** hog,int asci
 			{
 				for (j=0; j <  ASCII_LEN ; j++)
 				{
-
-					fprintf (file, "%f ", ascii[i][j]);
+					// 32 -> espace
+					// 39 -> '
+					// 97-122 -> a-z
+					// 195 + X -> éàöü
+					// 196-197 -> turc
+					if (j == 32 || j == 39 || (j > 150 && j < 200) || (j >= 97 && j <= 122))
+					{
+						fprintf (file, "%f ", ascii[i][j]);
+					}
 				}
 			
 		
