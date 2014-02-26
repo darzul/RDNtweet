@@ -55,7 +55,7 @@ int main(int argc , char **argv) {
 	const unsigned int num_layers=3 ; //input, hidden and output
 	unsigned int num_neurons_hidden;
 	const float desired_error = 0.0001;
-	const unsigned int max_iterations = 500;
+	const unsigned int max_iterations = 10000;
 	const unsigned int iterations_between_reports = 10;
 
 	if (argc != 5) {

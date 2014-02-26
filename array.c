@@ -18,12 +18,17 @@ char ** init_2d_char_tab (int nb_row, int row_len)
 
 int ** init_2d_int_tab (int nb_row, int row_len)
 {
-	int i;
+	int i, j;
 	int **tab = malloc (sizeof (int *) * nb_row);
 
 	for (i=0; i < nb_row; i++)
 	{
 		tab [i] = malloc (sizeof (int) * row_len);
+
+		for (j=0; j < row_len; j++)
+		{
+			tab[i][j] = 0;
+		}
 	}
 
 	return tab;
@@ -87,37 +92,28 @@ void tab_string_to_file (FILE *file, char **tab, int tab_len)
 	}
 }
 
-void tab_floatx2_to_file (char * file_name,float ** ascii, float ** hog, int ascii_size, int hog_size, int nbr_tweet, int nbr_data,  char *result){
-	
+void tab_floatx2_to_file (char * file_name, float **tab1, int tab1Len, float **tab2, int tab2Len, int nbr_tweet, int nbr_data,  char *result)
+{	
 	int i, j;
 
 	FILE *file = fopen (file_name, "w+");
 
-	//fprintf (file, "%d %d 7\n", nbr_data, ascii_size+hog_size);
-	fprintf (file, "%d %d 7\n", nbr_data, 77+hog_size);
+	fprintf (file, "%d %d 7\n", nbr_data, tab1Len + tab2Len);
 	
 		for (i=0; i < nbr_tweet; i++)
 		{
-			if (ascii [i] != NULL)
+			if (tab1 [i] != NULL)
 			{
-				for (j=0; j <  ASCII_LEN ; j++)
+				for (j=0; j <  tab1Len ; j++)
 				{
-					// 32 -> espace
-					// 39 -> '
-					// 97-122 -> a-z
-					// 195 + X -> éàöü
-					// 196-197 -> turc
-					if (j == 32 || j == 39 || (j > 150 && j < 200) || (j >= 97 && j <= 122))
-					{
-						fprintf (file, "%f ", ascii[i][j]);
-					}
+					fprintf (file, "%f ", tab1[i][j]);
 				}
 			
 		
-				for (j=0; j <hog_size; j++)
+				for (j=0; j < tab2Len; j++)
 				{
 			
-					fprintf (file, "%f ", hog[i][j]);
+					fprintf (file, "%f ", tab2[i][j]);
 
 				}
 		
@@ -127,7 +123,45 @@ void tab_floatx2_to_file (char * file_name,float ** ascii, float ** hog, int asc
 	fclose(file);
 }
 
-void tab_float_to_file (FILE *file, float **tab, int tab_len, int row_len, char *result)
+void tab_floatx3_to_file (char * file_name, float **tab1, int tab1Len, float **tab2, int tab2Len, float **tab3, int tab3Len, int nbr_tweet, int nbr_data,  char *result)
+{
+	int i, j;
+
+	FILE *file = fopen (file_name, "w+");
+
+	fprintf (file, "%d %d 7\n", nbr_data, tab1Len + tab2Len + tab3Len);
+	
+		for (i=0; i < nbr_tweet; i++)
+		{
+			if (tab1 [i] != NULL)
+			{
+				for (j=0; j <  tab1Len ; j++)
+				{
+					fprintf (file, "%f ", tab1[i][j]);
+				}
+			
+		
+				for (j=0; j < tab2Len; j++)
+				{
+			
+					fprintf (file, "%f ", tab2[i][j]);
+
+				}
+
+				for (j=0; j < tab3Len; j++)
+				{
+			
+					fprintf (file, "%f ", tab3[i][j]);
+
+				}
+		
+			fprintf (file, "%s\n", result);
+			}
+		}
+	fclose(file);
+}
+
+void tab_float_to_file (FILE *file, float **tab, int tab_len, int lineLen, char *result)
 {
 	int i, j;
 
@@ -135,17 +169,9 @@ void tab_float_to_file (FILE *file, float **tab, int tab_len, int row_len, char 
 	{
 		if (tab [i] != NULL)
 		{
-			for (j=0; j < row_len; j++)
-			{
-				// 32 -> espace
-				// 97-122 -> a-z
-				/*if ( j == 32 || (j >= 97 && j <= 122) )
-				{
-					fprintf (file, "%f ", tab[i][j]);
-				}*/
-				
-				fprintf (file, "%f ", tab[i][j]);
-				
+			for (j=0; j < lineLen; j++)
+			{	
+				fprintf (file, "%f ", tab[i][j]);	
 			}
 			fprintf (file, "%s\n", result);
 		}

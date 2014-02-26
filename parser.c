@@ -3,9 +3,9 @@
 
 int main (int argc, char *argv[]) 
 {
-	if (argc != 4 || strlen (argv [3]) != 2)
+	if (argc != 5 || strlen (argv [3]) != 2)
 	{
-		printf ("Please enter correct args\n./parser.exe input_file output_file language");
+		printf ("Please enter correct args\n./parser.exe input_file output_file language charset.txt\n");
 		return 0;
 	}
 
@@ -17,6 +17,19 @@ int main (int argc, char *argv[])
 		return 0;
 	}
 
+	int * charset = getCharset (argv [4]);
+	if (charset == NULL)
+	{
+		printf ("Error in charset.txt\n");
+		return 0;
+	}
+	int i=0;
+	while (charset[i] != -1)
+		i++;
+
+	int charsetLen = i;
+
+
 	int nb_tweet = count_tweets_from_file (argv [1]);
 	char **tweets = init_2d_char_tab (nb_tweet, CHAR_MAX_PER_TWEET);
 
@@ -27,26 +40,76 @@ int main (int argc, char *argv[])
 	removeURL (tweets, nb_tweet);
 	//removeHashTag (tweets, nb_tweet);
 	removePseudo (tweets, nb_tweet);
-	tweetsToLower (tweets, nb_tweet);
- 
-	float **frq_tab = create_frq_tab (tweets, nb_tweet);
+	tweetsToLower (tweets, nb_tweet);	
+
+	//float **frq_tab = create_frq_tab (tweets, nb_tweet);
+	int **intTweets = translateCharToInt (tweets, nb_tweet);
+
+	float **frqFirstCharWord = calculFrqFirstCharWord (tweets, nb_tweet);
+	float **frqLastCharWord = calculFrqLastCharWord (tweets, nb_tweet);
+	float **frq_tab = createIntFrqTab (intTweets, nb_tweet, charset, charsetLen);
 	float **hog_tab = create_hog(tweets, nb_tweet);
+
 	//print_2d_string_tab (tweets, nb_tweet);
 
 	int nb_data = count_tweets_from_tab (tweets, nb_tweet);
 
 
+	tab_floatx3_to_file (argv [2], frq_tab, charsetLen, frqLastCharWord, 26, frqFirstCharWord, 26, nb_tweet, nb_data, result);
+	//tab_floatx2_to_file (argv [2], frq_tab, charsetLen, frqLastCharWord, 26, nb_tweet, nb_data, result);
+	//tab_floatx2_to_file (argv [2], frq_tab, charsetLen, hog_tab, HOG_SIZE, nb_tweet, nb_data, result);
+	//data_to_file (argv [2], frq_tab, nb_tweet, nb_data, charsetLen, NB_OUTPUT, result, charsetLen);
+	
 
-	tab_floatx2_to_file (argv [2], frq_tab, hog_tab, ASCII_SIZE, HOG_SIZE, nb_tweet, nb_data, result);
-	//data_to_file (argv [2], hog_tab, nb_tweet, nb_data, HOG_SIZE, NB_OUTPUT, result);
-	
-	
+	free (charset);
 	free (result);
 	free_2d_tab ( (void **) tweets, nb_tweet);
 	free_2d_tab ( (void **) frq_tab, nb_tweet);
 	free_2d_tab ( (void **) hog_tab, nb_tweet);
 
 	return 0;
+}
+
+int *getCharset (char *fileName)
+{
+	FILE *file = fopen (fileName, "r");
+	char str [SIZE_MAX_CHARSET];
+	unsigned char letter;
+	int nb_char, i;
+
+	if (fgets (str, SIZE_MAX_CHARSET, file) == NULL)
+		return NULL;
+
+	int strLen = strlen (str);
+
+// When you have an octect between 194 and 197 it's a special char which take 2 octets
+	for (i=0, nb_char=0; i < strLen; i++)
+	{
+		letter = (unsigned char) str [i];
+		if ( letter >= 194 && letter <= 197 )
+			i++;
+
+		nb_char ++;
+	}
+
+	int *charset = malloc (sizeof (int)*(nb_char+1));
+	charset [nb_char] = -1;
+
+	for (i=0, nb_char=0; i < strLen; i++, nb_char ++)
+	{
+		letter = (unsigned char) str [i];
+		if ( letter >= 194 && letter <= 197 )
+		{
+			charset [nb_char] = letter*256 + (unsigned char) str [i+1];
+			i++;
+		}
+		else
+		{
+			charset [nb_char] = letter;
+		}
+	}
+
+	return charset;
 }
 
 int count_tweets_from_file (char *file_name)
@@ -100,6 +163,139 @@ float **  create_hog (char **tweets, int nb_tweet)
 	return frq_tab;
 }
 
+float ** calculFrqFirstCharWord (char **tweets, int nb_tweet)
+{
+	float **frq_tab = init_2d_float_tab (nb_tweet, 26);
+	int i;
+
+	for (i=0; i<nb_tweet; i++)
+	{
+		if (tweets [i] != NULL)
+		{
+			frq_tab [i] = getFrqFirstCharWordPerLine (tweets [i]);
+
+		}
+		else
+		{
+			free (frq_tab [i]);
+			frq_tab [i] = NULL;
+		}
+	}
+
+	return frq_tab;
+}
+
+float *getFrqFirstCharWordPerLine (char *line)
+{
+	// Just a-z letter
+	float *frq = malloc (sizeof (int)*26);
+	int i;
+	char c, next;
+
+	for (i=0; i < 26; i++)
+	{
+		frq [i] = 0;
+	}
+
+	for (i=0; i < CHAR_MAX_PER_TWEET; i++)
+	{
+		c = line [i];
+
+		if (c == '\0')
+			break;
+
+		if (c == ' ')
+		{
+			next = line[i+1];
+			if (next >= 97 && next <= 122)
+				frq [ next-97 ] ++;
+		}
+	}
+
+	return frq;
+}
+
+float ** calculFrqLastCharWord (char **tweets, int nb_tweet)
+{
+	float **frq_tab = init_2d_float_tab (nb_tweet, 26);
+	int i;
+
+	for (i=0; i<nb_tweet; i++)
+	{
+		if (tweets [i] != NULL)
+		{
+			frq_tab [i] = getFrqLastCharWordPerLine (tweets [i]);
+
+		}
+		else
+		{
+			free (frq_tab [i]);
+			frq_tab [i] = NULL;
+		}
+	}
+
+	return frq_tab;
+}
+
+float *getFrqLastCharWordPerLine (char *line)
+{
+	// Just a-z letter
+	float *frq = malloc (sizeof (int)*26);
+	int i;
+	char c, prev;
+
+	for (i=0; i < 26; i++)
+	{
+		frq [i] = 0;
+	}
+
+	// The first char doesn't interest us
+	for (i=1; i < CHAR_MAX_PER_TWEET; i++)
+	{
+		c = line [i];
+
+		if (c == '\0')
+		{
+			prev = line[i-1];
+			if (prev >= 97 && prev <= 122)
+				frq [ prev-97 ] ++;
+
+			break;
+		}
+
+		if (c == ' ')
+		{
+			prev = line[i-1];
+			if (prev >= 97 && prev <= 122)
+				frq [ prev-97 ] ++;
+		}
+	}
+
+	return frq;
+}
+
+float ** createIntFrqTab (int **tweets, int nb_tweet, int* charset, int charsetLen)
+{
+	float **frq_tab = init_2d_float_tab (nb_tweet, charsetLen);
+	int i;
+
+	for (i=0; i<nb_tweet; i++)
+	{
+		if (tweets [i] != NULL)
+		{
+			frq_tab [i] = countFrqInt (tweets [i], charset, charsetLen);
+
+		}
+		else
+		{
+			free (frq_tab [i]);
+			frq_tab [i] = NULL;
+		}
+	}
+
+	return frq_tab;
+}
+
 
 float ** create_frq_tab (char **tweets, int nb_tweet)
 {
@@ -134,7 +330,7 @@ float * calcul_hog_tweet_normalized (char *string) {
 	}
 	int diviseur = 256/(HOG_SIZE);
 	int diff;
-	float modulo;
+	//float modulo;
 	int entiere;
 	for (i=0; i<CHAR_MAX_PER_TWEET && string[i] != '\0' ; i++)
 	{
@@ -219,6 +415,54 @@ printf ("\n");
 
 }
 
+int getCharsetId (int *charset, int charsetLen, int letter)
+{
+	int i;
+
+	for (i=0; i<charsetLen; i++)
+	{
+		if (letter == charset[i])
+			return i;
+	}
+
+	return -1;
+}
+
+float * countFrqInt (int *string, int* charset, int charsetLen)
+{
+
+	float *frq_char = malloc (sizeof (int)*charsetLen);
+	int i, id;
+
+	for (i=0; i<charsetLen; i++)
+	{
+		frq_char [i] = 0;
+	}
+
+	for (i=0; i<CHAR_MAX_PER_TWEET; i++)
+	{
+		if ( string [i] == 0)
+			break;
+
+		id = getCharsetId (charset, charsetLen, string [i]);
+
+		if (id >= 0)
+			frq_char [id]++;
+	}
+
+	int nb_char = i;
+	
+	for (i=0; i < charsetLen; i++)
+	{
+		frq_char [i] /= nb_char;
+		//frq_char [i] = (frq_char [i] * 2) - 1;
+
+	}
+
+	//frq_char = centrage (frq_char,256);
+	return frq_char;
+}
+
 float * count_frq_char_normalized (char *string)
 {
 
@@ -227,7 +471,7 @@ float * count_frq_char_normalized (char *string)
 
 	for (i=0; i<256; i++)
 	{
-		frq_char [i] = '\0';
+		frq_char [i] = 0;
 	}
 
 	for (i=0; i<CHAR_MAX_PER_TWEET; i++)
@@ -362,13 +606,13 @@ void tweetsToLower (char **tweets, int line)
 {
 	int i, j;
 
-	for (i =0; i < line; i++)
+	for (i=0; i < line; i++)
 	{
 
 		if (tweets[i] == NULL)
 			continue;
 
-		for (j =0; j < ASCII_SIZE; j++)
+		for (j=0; j < ASCII_SIZE; j++)
 		{
 
 			if (tweets [i][j] == '\0')
@@ -379,13 +623,13 @@ void tweetsToLower (char **tweets, int line)
 	}
 }
 
-void data_to_file (char *file_name, float **frq_tab, int nb_tweet, int nb_data, int nb_input, int nb_output, char *result)
+void data_to_file (char *file_name, float **frq_tab, int nb_tweet, int nb_data, int nb_input, int nb_output, char *result, int lineLen)
 {
 	FILE *file = fopen (file_name, "w+");
 
 	fprintf (file, "%d %d %d\n", nb_data, nb_input, nb_output);
-	
-	tab_float_to_file (file, frq_tab, nb_tweet, ASCII_LEN, result);
+
+	tab_float_to_file (file, frq_tab, nb_tweet, lineLen, result);
 	
 
 	fclose (file);
@@ -431,4 +675,45 @@ char * lang_to_result (char *lang)
 	}
 
 	return result;
+}
+
+int **translateCharToInt (char **tweets, int nb_tweet) {
+
+	int ** tab = init_2d_int_tab (nb_tweet, CHAR_MAX_PER_TWEET);
+	int i, j;
+	unsigned char letter;
+
+	for (i=0; i < nb_tweet; i++)
+	{
+		if (tweets [i] == NULL)
+		{
+			tab [i] = NULL;
+			continue;
+		}
+
+		for (j=0; j < CHAR_MAX_PER_TWEET; j++)
+		{
+
+			if (tweets [i][j] == '\0')
+				break;
+
+			letter = (unsigned char)tweets [i][j];
+
+			/*
+				First octet is always between 194 and 197 for special char in charset.txt
+			*/
+			if (letter >= 194 && letter <= 197)
+			{
+				tab [i][j] = letter*256 + (unsigned char)tweets [i][j+1];
+				tab [i][j+1] = -1;
+				j++;
+			}
+			else
+			{
+				tab [i][j] = letter;
+			}
+		}
+	}
+
+	return tab;
 }
