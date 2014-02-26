@@ -12,7 +12,7 @@
 #define NB_OUTPUT 7
 
 static int ASCII_SIZE = 256;
-static int HOG_SIZE = 64;
+static int HOG_SIZE = 128;//only mutiple of 2 and <= 256 more it is better it is
 
 int *getCharset (char *fileName);
 
