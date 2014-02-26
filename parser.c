@@ -132,34 +132,18 @@ float * calcul_hog_tweet_normalized (char *string) {
 	{
 		hog [i] = 0;
 	}
-	int diviseur = 256/(HOG_SIZE);
+	int diviseur = 256/((HOG_SIZE)/2);
+	
+	//256/(64/2) = 8
 	int diff;
-	float modulo;
 	int entiere;
 	for (i=0; i<CHAR_MAX_PER_TWEET && string[i] != '\0' ; i++)
 	{
 		diff = ((unsigned char) string[i+1] )- ((unsigned char) string[i]);
-		if (diff < 0 ){
-			diff = -diff;
-		}
-		/*
-		Plz choose between 1 or 2 
-		*/
-		
-		/*** 1 ***/
+		//[-255 , 255]
 		entiere = diff/diviseur;
-		hog[entiere] ++;
-		//printf("%d ",entiere);
-		
-		/**** 2 ***/
-		/*
-		entiere = diff/diviseur;
-		modulo = diff%diviseur - diviseur/2 + 0.5; // valeur between [-3.5 ; 3.5]
-		if (modulo < 0 ){
-			modulo = -modulo; //value between [0 ;3.5]
-		}
-		hog[entiere] +=(float) 1 - (float)modulo/(diviseur/2);
-		*/
+		//entiere : [-31,99;31,99]
+		hog[entiere-1+(HOG_SIZE/2)] ++;
 		
 		
 		//print_hog (hog);
