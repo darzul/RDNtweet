@@ -19,13 +19,13 @@ perc_test=$1
 
 echo "[Generating parsed data]"
 
-./parser.exe $DATA_DIR/trainData.fr.txt $DATA_DIR/parsed_fr.data fr
-./parser.exe $DATA_DIR/trainData.en.txt $DATA_DIR/parsed_en.data en
-./parser.exe $DATA_DIR/trainData.de.txt $DATA_DIR/parsed_de.data de
-./parser.exe $DATA_DIR/trainData.es.txt $DATA_DIR/parsed_es.data es
-./parser.exe $DATA_DIR/trainData.pt.txt $DATA_DIR/parsed_pt.data pt
-./parser.exe $DATA_DIR/trainData.it.txt $DATA_DIR/parsed_it.data it
-./parser.exe $DATA_DIR/trainData.tr.txt $DATA_DIR/parsed_tr.data tr
+./parser.exe $DATA_DIR/trainData.fr.txt $DATA_DIR/parsed_fr.data fr charset.txt
+./parser.exe $DATA_DIR/trainData.en.txt $DATA_DIR/parsed_en.data en charset.txt
+./parser.exe $DATA_DIR/trainData.de.txt $DATA_DIR/parsed_de.data de charset.txt
+./parser.exe $DATA_DIR/trainData.es.txt $DATA_DIR/parsed_es.data es charset.txt
+./parser.exe $DATA_DIR/trainData.pt.txt $DATA_DIR/parsed_pt.data pt charset.txt
+./parser.exe $DATA_DIR/trainData.it.txt $DATA_DIR/parsed_it.data it charset.txt
+./parser.exe $DATA_DIR/trainData.tr.txt $DATA_DIR/parsed_tr.data tr charset.txt
 
 
 echo "[Merging all data files]"
