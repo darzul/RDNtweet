@@ -44,6 +44,7 @@ int main (int argc, char *argv[])
 
 	//float **frq_tab = create_frq_tab (tweets, nb_tweet);
 	int **intTweets = translateCharToInt (tweets, nb_tweet);
+	charsetFilter (intTweets, nb_tweet, charset, charsetLen);
 
 	float **frqFirstCharWord = calculFrqFirstCharWord (tweets, nb_tweet);
 	float **frqLastCharWord = calculFrqLastCharWord (tweets, nb_tweet);
@@ -64,8 +65,11 @@ int main (int argc, char *argv[])
 	free (charset);
 	free (result);
 	free_2d_tab ( (void **) tweets, nb_tweet);
+	free_2d_tab ( (void **) intTweets, nb_tweet);
 	free_2d_tab ( (void **) frq_tab, nb_tweet);
 	free_2d_tab ( (void **) hog_tab, nb_tweet);
+	free_2d_tab ( (void **) frqFirstCharWord, nb_tweet);
+	free_2d_tab ( (void **) frqLastCharWord, nb_tweet);
 
 	return 0;
 }
@@ -189,7 +193,7 @@ float *getFrqFirstCharWordPerLine (char *line)
 {
 	// Just a-z letter
 	float *frq = malloc (sizeof (int)*26);
-	int i;
+	int i, nb_char;
 	char c, next;
 
 	for (i=0; i < 26; i++)
@@ -197,7 +201,7 @@ float *getFrqFirstCharWordPerLine (char *line)
 		frq [i] = 0;
 	}
 
-	for (i=0; i < CHAR_MAX_PER_TWEET; i++)
+	for (i=0, nb_char=0; i < CHAR_MAX_PER_TWEET; i++)
 	{
 		c = line [i];
 
@@ -208,9 +212,17 @@ float *getFrqFirstCharWordPerLine (char *line)
 		{
 			next = line[i+1];
 			if (next >= 97 && next <= 122)
+			{
 				frq [ next-97 ] ++;
+				nb_char ++;
+			}
 		}
 	}
+
+	for (i=0; i < 26; i++)
+		frq [i] /= nb_char;
+
+	//normalize (frq, 26);
 
 	return frq;
 }
@@ -241,7 +253,7 @@ float *getFrqLastCharWordPerLine (char *line)
 {
 	// Just a-z letter
 	float *frq = malloc (sizeof (int)*26);
-	int i;
+	int i, nb_char;
 	char c, prev;
 
 	for (i=0; i < 26; i++)
@@ -250,7 +262,7 @@ float *getFrqLastCharWordPerLine (char *line)
 	}
 
 	// The first char doesn't interest us
-	for (i=1; i < CHAR_MAX_PER_TWEET; i++)
+	for (i=1, nb_char=0; i < CHAR_MAX_PER_TWEET; i++)
 	{
 		c = line [i];
 
@@ -267,35 +279,20 @@ float *getFrqLastCharWordPerLine (char *line)
 		{
 			prev = line[i-1];
 			if (prev >= 97 && prev <= 122)
+			{
 				frq [ prev-97 ] ++;
+				nb_char ++;
+			}
 		}
 	}
+
+	for (i=0; i < 26; i++)
+		frq [i] /= nb_char;
+
+	//normalize (frq, 26);
 
 	return frq;
 }
-
-float ** createIntFrqTab (int **tweets, int nb_tweet, int* charset, int charsetLen)
-{
-	float **frq_tab = init_2d_float_tab (nb_tweet, charsetLen);
-	int i;
-
-	for (i=0; i<nb_tweet; i++)
-	{
-		if (tweets [i] != NULL)
-		{
-			frq_tab [i] = countFrqInt (tweets [i], charset, charsetLen);
-
-		}
-		else
-		{
-			free (frq_tab [i]);
-			frq_tab [i] = NULL;
-		}
-	}
-
-	return frq_tab;
-}
-
 
 float ** create_frq_tab (char **tweets, int nb_tweet)
 {
@@ -367,7 +364,7 @@ float * calcul_hog_tweet_normalized (char *string) {
 	
 
 }
-float * centrage (float * tab, int size){
+float * normalize (float * tab, int size){
 
 
 	int i;
@@ -378,9 +375,9 @@ float * centrage (float * tab, int size){
 		}
 	}
 	for (i=0; i< size; i++ ){
-		tab[i]=((tab[i]/max)*2)-1;
-	
+		tab[i]=(2*tab[i]/max) - 1;
 	}
+
 	return tab;
 }
 
@@ -428,38 +425,56 @@ int getCharsetId (int *charset, int charsetLen, int letter)
 	return -1;
 }
 
+float ** createIntFrqTab (int **tweets, int nb_tweet, int* charset, int charsetLen)
+{
+	float **frq_tab = init_2d_float_tab (nb_tweet, charsetLen);
+	int i;
+
+	for (i=0; i<nb_tweet; i++)
+	{
+		if (tweets [i] != NULL)
+		{
+			frq_tab [i] = countFrqInt (tweets [i], charset, charsetLen);
+		}
+		else
+		{
+			free (frq_tab [i]);
+			frq_tab [i] = NULL;
+		}
+	}
+
+	return frq_tab;
+}
+
 float * countFrqInt (int *string, int* charset, int charsetLen)
 {
-
 	float *frq_char = malloc (sizeof (int)*charsetLen);
-	int i, id;
+	int i, nb_char;
 
 	for (i=0; i<charsetLen; i++)
-	{
 		frq_char [i] = 0;
-	}
 
-	for (i=0; i<CHAR_MAX_PER_TWEET; i++)
+	// -2 -> end of tweet
+	// -1 -> char not in charset
+	for (i=0, nb_char=0; i<CHAR_MAX_PER_TWEET; i++)
 	{
-		if ( string [i] == 0)
+		if ( string [i] == -2)
 			break;
 
-		id = getCharsetId (charset, charsetLen, string [i]);
-
-		if (id >= 0)
-			frq_char [id]++;
+		if (string [i] != -1)
+		{
+			frq_char [string [i]]++;
+			nb_char ++;
+		}
 	}
 
-	int nb_char = i;
-	
 	for (i=0; i < charsetLen; i++)
 	{
 		frq_char [i] /= nb_char;
-		//frq_char [i] = (frq_char [i] * 2) - 1;
-
 	}
 
-	//frq_char = centrage (frq_char,256);
+	//normalize (frq_char, charsetLen);
+
 	return frq_char;
 }
 
@@ -487,10 +502,10 @@ float * count_frq_char_normalized (char *string)
 	for (i=0; i < 256; i++)
 	{
 		frq_char [i] /= nb_char;
-		//frq_char [i] = (frq_char [i] * 2) - 1;
-
 	}
+
 	//frq_char = centrage (frq_char,256);
+
 	return frq_char;
 }
 
@@ -716,4 +731,26 @@ int **translateCharToInt (char **tweets, int nb_tweet) {
 	}
 
 	return tab;
+}
+
+void charsetFilter (int **tab, int size, int *charset, int charsetLen)
+{
+	int i,j;
+
+	for (i=0; i < size; i++)
+	{
+		if (tab [i] == NULL)
+			continue;
+
+		for (j=0; j < CHAR_MAX_PER_TWEET; j++)
+		{
+			if ( tab [i][j] == 0)
+			{
+				tab [i][j] = -2;
+				break;
+			}
+
+			tab [i][j] = getCharsetId (charset, charsetLen, tab [i][j]);
+		}
+	}
 }

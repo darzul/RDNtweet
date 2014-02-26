@@ -16,7 +16,7 @@ static int HOG_SIZE = 64;
 
 int *getCharset (char *fileName);
 
-float * centrage (float * tab, int size);
+float * normalize (float * tab, int size);
 float **  create_hog (char **tweets, int nb_tweet);
 void print_hog (float * hog);
 float *  normalize_hog (float * hog);
@@ -32,6 +32,7 @@ float *getFrqLastCharWordPerLine (char *line);
 
 float ** createIntFrqTab (int **tweets, int nb_tweet, int* charset, int charsetLen);
 float * countFrqInt (int *string, int* charset, int charsetLen);
+void charsetFilter (int **tab, int size, int *charset, int charsetLen);
 int getCharsetId (int *charset, int charsetLen, int letter);
 
 int count_tweets_from_file (char *file_name);
