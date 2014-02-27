@@ -29,6 +29,8 @@ float ** calculFrqFirstCharWord (char **tweets, int nb_tweet);
 float *getFrqFirstCharWordPerLine (char *line);
 float ** calculFrqLastCharWord (char **tweets, int nb_tweet);
 float *getFrqLastCharWordPerLine (char *line);
+float ** calculFrqPrevLastCharWord (char **tweets, int nb_tweet);
+float *getFrqPrevLastCharWordPerLine (char *line);
 
 float ** createIntFrqTab (int **tweets, int nb_tweet, int* charset, int charsetLen);
 float * countFrqInt (int *string, int* charset, int charsetLen);
@@ -48,3 +50,5 @@ int **translateCharToInt (char **tweets, int nb_tweet);
 
 char * lang_to_result (char *lang);
 void data_to_file (char *file_name, float **frq_tab, int nb_tweet, int nb_data, int nb_input, int nb_output, char *result, int lineLen);
+
+float **getProbTwoConsecutiveLetter (char **tab, int size);

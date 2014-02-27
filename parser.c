@@ -3,73 +3,128 @@
 
 int main (int argc, char *argv[]) 
 {
-	if (argc != 5 || strlen (argv [3]) != 2)
+	if (argc >= 5 || strlen (argv [3]) == 2)
 	{
-		printf ("Please enter correct args\n./parser.exe input_file output_file language charset.txt\n");
+		char *result = NULL;
+
+		if ( ( result = lang_to_result (argv [3]) ) == NULL )
+		{
+			printf ("Wrong language\nPossibilities are : fr, en, es, tr, de, pt, it\n");
+			return 0;
+		}
+
+		int * charset = getCharset (argv [4]);
+		if (charset == NULL)
+		{
+			printf ("Error in charset.txt\n");
+			return 0;
+		}
+		int i=0;
+		while (charset[i] != -1)
+			i++;
+
+		int charsetLen = i;
+
+		int nb_tweet = count_tweets_from_file (argv [1]);
+		char **tweets = init_2d_char_tab (nb_tweet, CHAR_MAX_PER_TWEET);
+
+		file_to_tab (argv[1], tweets, nb_tweet, CHAR_MAX_PER_TWEET);
+
+		if (argc == 5)
+			removeDouble (tweets, nb_tweet);
+
+		removeURL (tweets, nb_tweet);
+		//removeHashTag (tweets, nb_tweet);
+		removePseudo (tweets, nb_tweet);
+		tweetsToLower (tweets, nb_tweet);
+
+		int **intTweets = translateCharToInt (tweets, nb_tweet);
+		charsetFilter (intTweets, nb_tweet, charset, charsetLen);
+
+		float **frqFirstCharWord = calculFrqFirstCharWord (tweets, nb_tweet);
+		float **frqLastCharWord = calculFrqLastCharWord (tweets, nb_tweet);
+		float **frqPrevLastCharWord = calculFrqPrevLastCharWord (tweets, nb_tweet);
+		float **frq_tab = createIntFrqTab (intTweets, nb_tweet, charset, charsetLen);
+		float **hog_tab = create_hog(tweets, nb_tweet);
+		float **frqTwoConsecutiveLetter = getProbTwoConsecutiveLetter (tweets, nb_tweet);
+
+		int nb_data = count_tweets_from_tab (tweets, nb_tweet);
+
+		//tab_floatx5_to_file (argv [2], frq_tab, charsetLen, frqLastCharWord, 26, frqFirstCharWord, 26, frqTwoConsecutiveLetter, 676, hog_tab, HOG_SIZE, nb_tweet, nb_data, result);
+		tab_floatx5_to_file (argv [2], frq_tab, charsetLen, frqFirstCharWord, 26, frqPrevLastCharWord, 26, frqLastCharWord, 26,  frqTwoConsecutiveLetter, 676, nb_tweet, nb_data, result);
+		//tab_floatx4_to_file (argv [2], frq_tab, charsetLen, frqLastCharWord, 26, frqFirstCharWord, 26, frqTwoConsecutiveLetter, 676, nb_tweet, nb_data, result);
+		//tab_floatx4_to_file (argv [2], frq_tab, charsetLen, frqLastCharWord, 26, frqFirstCharWord, 26, hog_tab, HOG_SIZE, nb_tweet, nb_data, result);
+		//tab_floatx3_to_file (argv [2], frq_tab, charsetLen, frqLastCharWord, 26, frqFirstCharWord, 26, nb_tweet, nb_data, result);
+		//tab_floatx2_to_file (argv [2], frq_tab, charsetLen, frqTwoConsecutiveLetter, 676, nb_tweet, nb_data, result);
+		//tab_floatx2_to_file (argv [2], frq_tab, charsetLen, frqFirstCharWord, 26, nb_tweet, nb_data, result);
+		//tab_floatx2_to_file (argv [2], frq_tab, charsetLen, frqLastCharWord, 26, nb_tweet, nb_data, result);
+		//tab_floatx2_to_file (argv [2], frq_tab, charsetLen, frqPrevLastCharWord, 26, nb_tweet, nb_data, result);
+		//tab_floatx2_to_file (argv [2], frq_tab, charsetLen, hog_tab, HOG_SIZE, nb_tweet, nb_data, result);
+		//tab_floatx2_to_file (argv [2], frq_tab, charsetLen, frqTwoConsecutiveLetter, 676, nb_tweet, nb_data, result);
+		//data_to_file (argv [2], frq_tab, nb_tweet, nb_data, charsetLen, NB_OUTPUT, result, charsetLen);
+		//data_to_file (argv [2], frqTwoConsecutiveLetter, nb_tweet, nb_data, 676, NB_OUTPUT, result, 676);
+		//data_to_file (argv [2], frqPrevLastCharWord, nb_tweet, nb_data, 26, NB_OUTPUT, result, 26);
+
+		free (charset);
+		free (result);
+		free_2d_tab ( (void **) tweets, nb_tweet);
+		free_2d_tab ( (void **) intTweets, nb_tweet);
+		free_2d_tab ( (void **) frq_tab, nb_tweet);
+		free_2d_tab ( (void **) hog_tab, nb_tweet);
+		free_2d_tab ( (void **) frqFirstCharWord, nb_tweet);
+		free_2d_tab ( (void **) frqLastCharWord, nb_tweet);
+		free_2d_tab ( (void **) frqPrevLastCharWord, nb_tweet);
+		free_2d_tab ( (void **) frqTwoConsecutiveLetter, nb_tweet);
+	}
+	else if (argc == 4)
+	{
+		int * charset = getCharset (argv [3]);
+		if (charset == NULL)
+		{
+			printf ("Error in charset.txt\n");
+			return 0;
+		}
+		int i=0;
+		while (charset[i] != -1)
+			i++;
+
+		int charsetLen = i;
+
+		int nb_tweet = count_tweets_from_file (argv [1]);
+		char **tweets = init_2d_char_tab (nb_tweet, CHAR_MAX_PER_TWEET);
+
+		file_to_tab (argv[1], tweets, nb_tweet, CHAR_MAX_PER_TWEET);
+
+		int **intTweets = translateCharToInt (tweets, nb_tweet);
+		charsetFilter (intTweets, nb_tweet, charset, charsetLen);
+
+		float **frqFirstCharWord = calculFrqFirstCharWord (tweets, nb_tweet);
+		float **frqLastCharWord = calculFrqLastCharWord (tweets, nb_tweet);
+		float **frqPrevLastCharWord = calculFrqPrevLastCharWord (tweets, nb_tweet);
+		float **frq_tab = createIntFrqTab (intTweets, nb_tweet, charset, charsetLen);
+		float **hog_tab = create_hog(tweets, nb_tweet);
+		float **frqTwoConsecutiveLetter = getProbTwoConsecutiveLetter (tweets, nb_tweet);
+
+		tab_floatx5_to_file (argv [2], frq_tab, charsetLen, frqFirstCharWord, 26, frqPrevLastCharWord, 26, frqLastCharWord, 26,  								frqTwoConsecutiveLetter, 676, nb_tweet, nb_tweet, "");
+
+		free (charset);
+		free_2d_tab ( (void **) tweets, nb_tweet);
+		free_2d_tab ( (void **) intTweets, nb_tweet);
+		free_2d_tab ( (void **) frq_tab, nb_tweet);
+		free_2d_tab ( (void **) hog_tab, nb_tweet);
+		free_2d_tab ( (void **) frqFirstCharWord, nb_tweet);
+		free_2d_tab ( (void **) frqLastCharWord, nb_tweet);
+		free_2d_tab ( (void **) frqPrevLastCharWord, nb_tweet);
+		free_2d_tab ( (void **) frqTwoConsecutiveLetter, nb_tweet);
+	}
+	else
+	{
+		printf ("Please enter correct args\nFor training : ./parser.exe input_file output_file language charset.txt\n");
+		printf ("For testing data : ./parser.exe input_file output_file charset.txt\n");
 		return 0;
 	}
-
-	char *result = NULL;
-
-	if ( ( result = lang_to_result (argv [3]) ) == NULL )
-	{
-		printf ("Wrong language\nPossibilities are : fr, en, es, tr, de, pt, it\n");
-		return 0;
-	}
-
-	int * charset = getCharset (argv [4]);
-	if (charset == NULL)
-	{
-		printf ("Error in charset.txt\n");
-		return 0;
-	}
-	int i=0;
-	while (charset[i] != -1)
-		i++;
-
-	int charsetLen = i;
-
-
-	int nb_tweet = count_tweets_from_file (argv [1]);
-	char **tweets = init_2d_char_tab (nb_tweet, CHAR_MAX_PER_TWEET);
-
-	
-	file_to_tab (argv[1], tweets, nb_tweet, CHAR_MAX_PER_TWEET);
-
-	removeDouble (tweets, nb_tweet);
-	removeURL (tweets, nb_tweet);
-	//removeHashTag (tweets, nb_tweet);
-	removePseudo (tweets, nb_tweet);
-	tweetsToLower (tweets, nb_tweet);	
-
-	//float **frq_tab = create_frq_tab (tweets, nb_tweet);
-	int **intTweets = translateCharToInt (tweets, nb_tweet);
-	charsetFilter (intTweets, nb_tweet, charset, charsetLen);
-
-	float **frqFirstCharWord = calculFrqFirstCharWord (tweets, nb_tweet);
-	float **frqLastCharWord = calculFrqLastCharWord (tweets, nb_tweet);
-	float **frq_tab = createIntFrqTab (intTweets, nb_tweet, charset, charsetLen);
-	float **hog_tab = create_hog(tweets, nb_tweet);
 
 	//print_2d_string_tab (tweets, nb_tweet);
-
-	int nb_data = count_tweets_from_tab (tweets, nb_tweet);
-
-
-	tab_floatx3_to_file (argv [2], frq_tab, charsetLen, frqLastCharWord, 26, frqFirstCharWord, 26, nb_tweet, nb_data, result);
-	//tab_floatx2_to_file (argv [2], frq_tab, charsetLen, frqLastCharWord, 26, nb_tweet, nb_data, result);
-	//tab_floatx2_to_file (argv [2], frq_tab, charsetLen, hog_tab, HOG_SIZE, nb_tweet, nb_data, result);
-	//data_to_file (argv [2], frq_tab, nb_tweet, nb_data, charsetLen, NB_OUTPUT, result, charsetLen);
-	
-
-	free (charset);
-	free (result);
-	free_2d_tab ( (void **) tweets, nb_tweet);
-	free_2d_tab ( (void **) intTweets, nb_tweet);
-	free_2d_tab ( (void **) frq_tab, nb_tweet);
-	free_2d_tab ( (void **) hog_tab, nb_tweet);
-	free_2d_tab ( (void **) frqFirstCharWord, nb_tweet);
-	free_2d_tab ( (void **) frqLastCharWord, nb_tweet);
 
 	return 0;
 }
@@ -146,27 +201,6 @@ int count_tweets_from_tab (char **tweets, int nb_tweet)
 	return nb_data;
 }
 
-float **  create_hog (char **tweets, int nb_tweet)
-{
-	float **frq_tab = init_2d_float_tab (nb_tweet, HOG_SIZE);
-	int i;
-
-	for (i=0; i<nb_tweet; i++)
-	{
-		if (tweets [i] != NULL)
-		{
-			frq_tab [i] = calcul_hog_tweet_normalized (tweets [i]);
-		}
-		else
-		{
-			free (frq_tab [i]);
-			frq_tab [i] = NULL;
-		}
-	}
-
-	return frq_tab;
-}
-
 float ** calculFrqFirstCharWord (char **tweets, int nb_tweet)
 {
 	float **frq_tab = init_2d_float_tab (nb_tweet, 26);
@@ -219,9 +253,11 @@ float *getFrqFirstCharWordPerLine (char *line)
 		}
 	}
 
-	for (i=0; i < 26; i++)
-		frq [i] /= nb_char;
-
+	if (nb_char != 0)
+	{
+		for (i=0; i < 26; i++)
+			frq [i] /= nb_char;
+	}
 	//normalize (frq, 26);
 
 	return frq;
@@ -286,8 +322,87 @@ float *getFrqLastCharWordPerLine (char *line)
 		}
 	}
 
+	if (nb_char != 0)
+	{
+		for (i=0; i < 26; i++)
+			frq [i] /= nb_char;
+	}
+
+	//normalize (frq, 26);
+
+	return frq;
+}
+
+float ** calculFrqPrevLastCharWord (char **tweets, int nb_tweet)
+{
+	float **frq_tab = init_2d_float_tab (nb_tweet, 26);
+	int i;
+
+	for (i=0; i<nb_tweet; i++)
+	{
+		if (tweets [i] != NULL)
+		{
+			frq_tab [i] = getFrqPrevLastCharWordPerLine (tweets [i]);
+
+		}
+		else
+		{
+			free (frq_tab [i]);
+			frq_tab [i] = NULL;
+		}
+	}
+
+	return frq_tab;
+}
+
+float *getFrqPrevLastCharWordPerLine (char *line)
+{
+	// Just a-z letter
+	float *frq = malloc (sizeof (int)*26);
+	int i, nb_char;
+	char c, prev;
+
 	for (i=0; i < 26; i++)
-		frq [i] /= nb_char;
+	{
+		frq [i] = 0;
+	}
+
+	for (i=0, nb_char=0; i < CHAR_MAX_PER_TWEET; i++)
+	{
+		c = line [i];
+
+		if (c == '\0')
+		{
+
+			if (i >= 2)
+			{
+				prev = line[i-2];
+				if (prev >= 97 && prev <= 122)
+					frq [ prev-97 ] ++;
+
+				break;
+			}
+		}
+
+		if (c == ' ')
+		{
+			if (i >= 2)
+			{
+				prev = line[i-2];
+				if (prev >= 97 && prev <= 122)
+				{
+					frq [ prev-97 ] ++;
+					nb_char ++;
+				}
+			}
+		}
+	}
+
+	if (nb_char != 0)
+	{
+		for (i=0; i < 26; i++)
+			frq [i] /= nb_char;
+	}
 
 	//normalize (frq, 26);
 
@@ -315,13 +430,33 @@ float ** create_frq_tab (char **tweets, int nb_tweet)
 	return frq_tab;
 }
 
+float **  create_hog (char **tweets, int nb_tweet)
+{
+	float **frq_tab = init_2d_float_tab (nb_tweet, HOG_SIZE);
+	int i;
+
+	for (i=0; i<nb_tweet; i++)
+	{
+		if (tweets [i] != NULL)
+		{
+			frq_tab [i] = calcul_hog_tweet_normalized (tweets [i]);
+		}
+		else
+		{
+			free (frq_tab [i]);
+			frq_tab [i] = NULL;
+		}
+	}
+
+	return frq_tab;
+}
 
 float * calcul_hog_tweet_normalized (char *string) {
 
 	float * hog = malloc (sizeof (int)*HOG_SIZE);
 	int i;
 
-	for (i=0; i<HOG_SIZE; i++)
+	for (i=0; i < HOG_SIZE; i++)
 	{
 		hog [i] = 0;
 	}
@@ -343,7 +478,7 @@ float * calcul_hog_tweet_normalized (char *string) {
 	}
 
 	hog = normalize_hog (hog);
-	//hog = centrage(hog, HOG_SIZE);
+	//hog = normalize (hog, HOG_SIZE);
 	return hog;
 	
 
@@ -358,8 +493,12 @@ float * normalize (float * tab, int size){
 			max = tab[i];
 		}
 	}
-	for (i=0; i< size; i++ ){
-		tab[i]=(2*tab[i]/max) - 1;
+
+	if (max != 0)
+	{
+		for (i=0; i< size; i++ ){
+			tab[i]=(2*tab[i]/max) - 1;
+		}
 	}
 
 	return tab;
@@ -634,6 +773,7 @@ void data_to_file (char *file_name, float **frq_tab, int nb_tweet, int nb_data, 
 	fclose (file);
 }
 
+/*
 char * lang_to_result (char *lang)
 {
 
@@ -675,7 +815,49 @@ char * lang_to_result (char *lang)
 
 	return result;
 }
+*/
 
+char * lang_to_result (char *lang)
+{
+
+	char *result = malloc (sizeof (char)*14);
+
+
+	if (strcmp (lang, "fr") == 0)
+	{
+		strcpy (result, "1 -1 -1 -1 -1 -1 -1");
+	}
+	else if (strcmp (lang, "en") == 0)
+	{
+		strcpy (result, "-1 1 -1 -1 -1 -1 -1");
+	}
+	else if (strcmp (lang, "de") == 0)
+	{
+		strcpy (result, "-1 -1 1 -1 -1 -1 -1");
+	}
+	else if (strcmp (lang, "es") == 0)
+	{
+		strcpy (result, "-1 -1 -1 1 -1 -1 -1");
+	}
+	else if (strcmp (lang, "pt") == 0)
+	{
+		strcpy (result, "-1 -1 -1 -1 1 -1 -1");
+	}
+	else if (strcmp (lang, "it") == 0)
+	{
+		strcpy (result, "-1 -1 -1 -1 -1 1 -1");
+	}
+	else if (strcmp (lang, "tr") == 0)
+	{
+		strcpy (result, "-1 -1 -1 -1 -1 -1 1");
+	}
+	else
+	{
+		return NULL;
+	}
+
+	return result;
+}
 int **translateCharToInt (char **tweets, int nb_tweet) {
 
 	int ** tab = init_2d_int_tab (nb_tweet, CHAR_MAX_PER_TWEET);
@@ -719,14 +901,14 @@ int **translateCharToInt (char **tweets, int nb_tweet) {
 
 void charsetFilter (int **tab, int size, int *charset, int charsetLen)
 {
-	int i,j;
+	int i,j,nb_char;
 
 	for (i=0; i < size; i++)
 	{
 		if (tab [i] == NULL)
 			continue;
 
-		for (j=0; j < CHAR_MAX_PER_TWEET; j++)
+		for (j=0, nb_char=0; j < CHAR_MAX_PER_TWEET; j++)
 		{
 			if ( tab [i][j] == 0)
 			{
@@ -735,6 +917,59 @@ void charsetFilter (int **tab, int size, int *charset, int charsetLen)
 			}
 
 			tab [i][j] = getCharsetId (charset, charsetLen, tab [i][j]);
+
+			if ( tab [i][j] == -1)
+				nb_char ++;
+		}
+
+		if ( nb_char == 0 )
+		{
+			free (tab [i]);
+			tab [i] = NULL;
 		}
 	}
+}
+
+float **getProbTwoConsecutiveLetter (char **tab, int size)
+{
+	int i,j, nb_char;
+	char c, next;
+	float **stat = init_2d_float_tab (size, 676);
+
+	for (i=0; i < size; i++)
+	{
+		if (tab [i] == NULL)
+		{
+			stat [i] = NULL;
+			continue;
+		}
+
+		for (j=0, nb_char=0; j < CHAR_MAX_PER_TWEET; j++)
+		{
+			next = tab [i][j+1];
+			if (next == '\0')
+				break;
+
+			c = tab [i][j];
+			
+			if ( c >= 97 && c <= 122 && next >= 97 && next <= 122 )
+			{
+				c -= 97;
+				next -= 97;
+
+				stat [i][c*26 + next] ++;
+				nb_char ++;
+			}
+		}
+
+		if (nb_char > 0)
+		{
+			for (j=0; j < 676; j++)
+				stat[i][j] /= nb_char;
+		}
+
+		//normalize (stat [i], 52);
+	}
+
+	return stat;
 }

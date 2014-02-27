@@ -36,12 +36,15 @@ int ** init_2d_int_tab (int nb_row, int row_len)
 
 float ** init_2d_float_tab (int nb_row, int row_len)
 {
-	int i;
+	int i,j;
 	float **tab = malloc (sizeof (float *) * nb_row);
 
 	for (i=0; i < nb_row; i++)
 	{
 		tab [i] = malloc (sizeof (float) * row_len);
+
+		for (j=0; j < row_len; j++)
+			tab [i][j] = 0;
 	}
 
 	return tab;
@@ -154,6 +157,69 @@ void tab_floatx3_to_file (char * file_name, float **tab1, int tab1Len, float **t
 					fprintf (file, "%f ", tab3[i][j]);
 
 				}
+		
+			fprintf (file, "%s\n", result);
+			}
+		}
+	fclose(file);
+}
+
+void tab_floatx4_to_file (char * file_name, float **tab1, int tab1Len, float **tab2, int tab2Len, float **tab3, int tab3Len, float** tab4, int tab4Len, int nbr_tweet, int nbr_data,  char *result)
+{
+	int i, j;
+
+	FILE *file = fopen (file_name, "w+");
+
+	fprintf (file, "%d %d 7\n", nbr_data, tab1Len + tab2Len + tab3Len + tab4Len);
+	
+		for (i=0; i < nbr_tweet; i++)
+		{
+			if (tab1 [i] != NULL)
+			{
+				for (j=0; j <  tab1Len ; j++)
+					fprintf (file, "%f ", tab1[i][j]);
+		
+				for (j=0; j < tab2Len; j++)
+					fprintf (file, "%f ", tab2[i][j]);
+
+				for (j=0; j < tab3Len; j++)
+					fprintf (file, "%f ", tab3[i][j]);
+
+				for (j=0; j < tab4Len; j++)
+					fprintf (file, "%f ", tab4[i][j]);
+		
+			fprintf (file, "%s\n", result);
+			}
+		}
+	fclose(file);
+}
+
+void tab_floatx5_to_file (char * file_name, float **tab1, int tab1Len, float **tab2, int tab2Len, float **tab3, int tab3Len, float** tab4, int tab4Len, float **tab5, int tab5Len, int nbr_tweet, int nbr_data,  char *result)
+{
+	int i, j;
+
+	FILE *file = fopen (file_name, "w+");
+
+	fprintf (file, "%d %d 7\n", nbr_data, tab1Len + tab2Len + tab3Len + tab4Len + tab5Len);
+	
+		for (i=0; i < nbr_tweet; i++)
+		{
+			if (tab1 [i] != NULL)
+			{
+				for (j=0; j < tab1Len ; j++)
+					fprintf (file, "%f ", tab1[i][j]);
+		
+				for (j=0; j < tab2Len; j++)
+					fprintf (file, "%f ", tab2[i][j]);
+
+				for (j=0; j < tab3Len; j++)
+					fprintf (file, "%f ", tab3[i][j]);
+
+				for (j=0; j < tab4Len; j++)
+					fprintf (file, "%f ", tab4[i][j]);
+
+				for (j=0; j < tab5Len; j++)
+					fprintf (file, "%f ", tab5[i][j]);
 		
 			fprintf (file, "%s\n", result);
 			}
