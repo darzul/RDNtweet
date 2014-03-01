@@ -26,17 +26,22 @@ int main (int argc, char *argv[])
 		int charsetLen = i;
 
 		int nb_tweet = count_tweets_from_file (argv [1]);
+printf ("Nb tweet: %d\n", nb_tweet);
 		char **tweets = init_2d_char_tab (nb_tweet, CHAR_MAX_PER_TWEET);
 
 		file_to_tab (argv[1], tweets, nb_tweet, CHAR_MAX_PER_TWEET);
 
-		if (argc == 5)
-			removeDouble (tweets, nb_tweet);
-
+		removeRT (tweets, nb_tweet);
 		removeURL (tweets, nb_tweet);
 		//removeHashTag (tweets, nb_tweet);
 		removePseudo (tweets, nb_tweet);
 		tweetsToLower (tweets, nb_tweet);
+
+		if (argc == 5)
+			removeDouble (tweets, nb_tweet);
+
+//print_2d_string_tab (tweets, nb_tweet);
+
 
 		int **intTweets = translateCharToInt (tweets, nb_tweet);
 		charsetFilter (intTweets, nb_tweet, charset, charsetLen);
@@ -245,6 +250,9 @@ float *getFrqFirstCharWordPerLine (char *line)
 		if (c == ' ')
 		{
 			next = line[i+1];
+			if (next == 35)
+				next = line[i+2];
+
 			if (next >= 97 && next <= 122)
 			{
 				frq [ next-97 ] ++;
@@ -630,6 +638,21 @@ float * count_frq_char_normalized (char *string)
 	//frq_char = centrage (frq_char,256);
 
 	return frq_char;
+}
+
+void removeRT(char ** tweetTable, int size)
+{
+	int i;
+
+	for (i =0; i < size; i++){
+
+		if (tweetTable[i] != NULL)
+		{
+			while (str_remove_word (tweetTable[i], "rt @"))
+			{
+			}
+		}
+	}
 }
 
 void removeDouble (char ** tweetTable, int size)

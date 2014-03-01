@@ -16,7 +16,7 @@ int main(int argc , char **argv) {
   fann_type *calc_out;
   int i;
 	
-  if (argc==1) {
+  if (argc != 3) {
     printf("usage : test testFile.txt network.net\n");
     return 0;
   }

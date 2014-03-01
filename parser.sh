@@ -17,13 +17,13 @@ fi
 perc_test=$1
 
 
-nb_data_fr=$(wc -l $DATA_DIR/parsed_fr.data | cut -d ' ' -f1)
-nb_data_en=$(wc -l $DATA_DIR/parsed_en.data | cut -d ' ' -f1)
-nb_data_de=$(wc -l $DATA_DIR/parsed_de.data | cut -d ' ' -f1)
-nb_data_es=$(wc -l $DATA_DIR/parsed_es.data | cut -d ' ' -f1)
-nb_data_pt=$(wc -l $DATA_DIR/parsed_pt.data | cut -d ' ' -f1)
-nb_data_it=$(wc -l $DATA_DIR/parsed_it.data | cut -d ' ' -f1)
-nb_data_tr=$(wc -l $DATA_DIR/parsed_tr.data | cut -d ' ' -f1)
+nb_data_fr=$(wc -l $DATA_DIR/trainData.fr.txt | cut -d ' ' -f1)
+nb_data_en=$(wc -l $DATA_DIR/trainData.en.txt | cut -d ' ' -f1)
+nb_data_de=$(wc -l $DATA_DIR/trainData.de.txt | cut -d ' ' -f1)
+nb_data_es=$(wc -l $DATA_DIR/trainData.es.txt | cut -d ' ' -f1)
+nb_data_pt=$(wc -l $DATA_DIR/trainData.pt.txt | cut -d ' ' -f1)
+nb_data_it=$(wc -l $DATA_DIR/trainData.it.txt | cut -d ' ' -f1)
+nb_data_tr=$(wc -l $DATA_DIR/trainData.tr.txt | cut -d ' ' -f1)
 
 nb_data=$(($nb_data_fr + $nb_data_en + $nb_data_de + $nb_data_es))
 nb_data=$(($nb_data + $nb_data_pt + $nb_data_it + $nb_data_tr))

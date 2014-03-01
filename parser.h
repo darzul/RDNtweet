@@ -40,6 +40,7 @@ int getCharsetId (int *charset, int charsetLen, int letter);
 int count_tweets_from_file (char *file_name);
 int count_tweets_from_tab (char **tweets, int nb_tweet);
 
+void removeRT (char ** tweetTable, int size);
 void removeDouble (char ** tweetTable, int size);
 void removeURL(char ** tweetTable, int size);
 void removeHashTag(char ** tweetTable, int size);
