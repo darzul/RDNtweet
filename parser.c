@@ -31,11 +31,11 @@ printf ("Nb tweet: %d\n", nb_tweet);
 
 		file_to_tab (argv[1], tweets, nb_tweet, CHAR_MAX_PER_TWEET);
 
+		tweetsToLower (tweets, nb_tweet);
 		removeRT (tweets, nb_tweet);
 		removeURL (tweets, nb_tweet);
 		//removeHashTag (tweets, nb_tweet);
 		removePseudo (tweets, nb_tweet);
-		tweetsToLower (tweets, nb_tweet);
 
 		if (argc == 5)
 			removeDouble (tweets, nb_tweet);
