@@ -18,7 +18,7 @@ bestTrain.exe : bestTrain.c
 eval.exe : eval.c
 	#
 	### [Compiling] bestTrain.c ###
-	$(CC) $(FLAGS) eval.c -o eval.exe $(CLIBS)
+	$(CC) $(FLAGS) eval.c -o eval.exe $(CLIBS) && $(CC) $(FLAGS) testEval.c -o testEval.exe $(CLIBS)
 
 parser.exe: parser.c array.o parser.h
 	#

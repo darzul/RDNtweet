@@ -105,7 +105,7 @@ void tab_string_to_file (FILE *file, char **tab, int tab_len)
 	{
 		if (tab [i] != NULL)
 		{
-			fprintf (file, "%c", tab[i]);
+			fprintf (file, "%s", tab[i]);
 		}
 	}
 }
@@ -209,7 +209,7 @@ void tab_floatx4_to_file (char * file_name, float **tab1, int tab1Len, float **t
 	fclose(file);
 }
 
-void tab_floatx5_to_file (char * file_name, float **tab1, int tab1Len, float **tab2, int tab2Len, float **tab3, int tab3Len, float** tab4, int tab4Len, float **tab5, int tab5Len, int nbr_tweet, int nbr_data,  char *result)
+void tab_floatx5_to_file (char * file_name, float **tab1, int tab1Len, float **tab2, int tab2Len, float **tab3, int tab3Len, float** tab4, int tab4Len, float **tab5, int tab5Len, int nbr_tweet, int nbr_data, char *result)
 {
 	int i, j;
 
@@ -242,13 +242,41 @@ void tab_floatx5_to_file (char * file_name, float **tab1, int tab1Len, float **t
 	fclose(file);
 }
 
-void tab_floatx5_to_file_withNULL (char * file_name, float **tab1, int tab1Len, float **tab2, int tab2Len, float **tab3, int tab3Len, float** tab4, int tab4Len, float **tab5, int tab5Len, int nbr_tweet, int nbr_data,  char *result)
+void tab_floatx1_to_file_withNULL (char * file_name, float **tab, int tabLen, int nbr_tweet, int nbr_data, int nb_output, char *result)
+{
+	int i, j;
+
+	FILE *file = fopen (file_name, "w+");
+
+	fprintf (file, "%d %d %d\n", nbr_data, tabLen, nb_output);
+	
+		for (i=0; i < nbr_tweet; i++)
+		{
+			if (tab [i] != NULL)
+			{
+				for (j=0; j < tabLen ; j++)
+					fprintf (file, "%f ", tab[i][j]);
+		
+				fprintf (file, "%s\n", result);
+			}
+			else
+			{
+				for (j=0; j < tabLen ; j++)
+					fprintf (file, "0 ");
+
+				fprintf (file, "%s\n", result);
+			}
+		}
+	fclose(file);
+}
+
+void tab_floatx5_to_file_withNULL (char * file_name, float **tab1, int tab1Len, float **tab2, int tab2Len, float **tab3, int tab3Len, float** tab4, int tab4Len, float **tab5, int tab5Len, int nbr_tweet, int nbr_data, int nb_output, char *result)
 {
 	int i, j, nb_inputs = tab1Len + tab2Len + tab3Len + tab4Len + tab5Len;
 
 	FILE *file = fopen (file_name, "w+");
 
-	fprintf (file, "%d %d 7\n", nbr_data, nb_inputs);
+	fprintf (file, "%d %d %d\n", nbr_data, nb_inputs, nb_output);
 	
 		for (i=0; i < nbr_tweet; i++)
 		{
