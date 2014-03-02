@@ -69,16 +69,31 @@ void free_2d_tab (void **tab, int tab_len)
 void file_to_tab (char *file_name, char ** tab, int tab_len, int max_len_per_row)
 {
 	FILE *file = fopen (file_name, "r+");
-	int i;
-	char *phrase = malloc (sizeof (char)*max_len_per_row);
+	int i = 0, nb_char = 0;
+	char c;
 
-	for (i=0; i < tab_len; i++)
+	while ( (c = fgetc (file)) != EOF )
 	{
-		fgets (phrase, max_len_per_row, file);
-		strcpy (tab [i], phrase);
+		if (nb_char < max_len_per_row)
+		{
+			tab [i][nb_char] = c;
+		}
+
+		nb_char ++;
+
+		if (c == '\n')
+		{
+			if (nb_char > max_len_per_row)
+			{
+				printf ("ERROR : tweet too long, line :%d\n", i);
+				tab[i][max_len_per_row-1] = '\n';
+			}
+
+			i++;
+			nb_char = 0;
+		}
 	}
 
-	free (phrase);
 	fclose (file);
 }
 
@@ -90,7 +105,7 @@ void tab_string_to_file (FILE *file, char **tab, int tab_len)
 	{
 		if (tab [i] != NULL)
 		{
-			fprintf (file, "%s", tab[i]);
+			fprintf (file, "%c", tab[i]);
 		}
 	}
 }
@@ -222,6 +237,46 @@ void tab_floatx5_to_file (char * file_name, float **tab1, int tab1Len, float **t
 					fprintf (file, "%f ", tab5[i][j]);
 		
 			fprintf (file, "%s\n", result);
+			}
+		}
+	fclose(file);
+}
+
+void tab_floatx5_to_file_withNULL (char * file_name, float **tab1, int tab1Len, float **tab2, int tab2Len, float **tab3, int tab3Len, float** tab4, int tab4Len, float **tab5, int tab5Len, int nbr_tweet, int nbr_data,  char *result)
+{
+	int i, j, nb_inputs = tab1Len + tab2Len + tab3Len + tab4Len + tab5Len;
+
+	FILE *file = fopen (file_name, "w+");
+
+	fprintf (file, "%d %d 7\n", nbr_data, nb_inputs);
+	
+		for (i=0; i < nbr_tweet; i++)
+		{
+			if (tab1 [i] != NULL)
+			{
+				for (j=0; j < tab1Len ; j++)
+					fprintf (file, "%f ", tab1[i][j]);
+		
+				for (j=0; j < tab2Len; j++)
+					fprintf (file, "%f ", tab2[i][j]);
+
+				for (j=0; j < tab3Len; j++)
+					fprintf (file, "%f ", tab3[i][j]);
+
+				for (j=0; j < tab4Len; j++)
+					fprintf (file, "%f ", tab4[i][j]);
+
+				for (j=0; j < tab5Len; j++)
+					fprintf (file, "%f ", tab5[i][j]);
+		
+				fprintf (file, "%s\n", result);
+			}
+			else
+			{
+				for (j=0; j < nb_inputs ; j++)
+					fprintf (file, "0 ");
+
+				fprintf (file, "%s\n", result);
 			}
 		}
 	fclose(file);

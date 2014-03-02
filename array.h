@@ -20,6 +20,7 @@ void tab_floatx2_to_file (char * file_name, float **tab1, int tab1Len, float **t
 void tab_floatx3_to_file (char * file_name, float **tab1, int tab1Len, float **tab2, int tab2Len, float **tab3, int tab3Len, int nbr_tweet, int nbr_data,  char *result);
 void tab_floatx4_to_file (char * file_name, float **tab1, int tab1Len, float **tab2, int tab2Len, float **tab3, int tab3Len, float** tab4, int tab4Len, int nbr_tweet, int nbr_data,  char *result);
 void tab_floatx5_to_file (char * file_name, float **tab1, int tab1Len, float **tab2, int tab2Len, float **tab3, int tab3Len, float** tab4, int tab4Len, float **tab5, int tab5Len, int nbr_tweet, int nbr_data,  char *result);
+void tab_floatx5_to_file_withNULL (char * file_name, float **tab1, int tab1Len, float **tab2, int tab2Len, float **tab3, int tab3Len, float** tab4, int tab4Len, float **tab5, int tab5Len, int nbr_tweet, int nbr_data,  char *result);
 
 /*
 	Display data

@@ -56,7 +56,10 @@ printf ("Nb tweet: %d\n", nb_tweet);
 		int nb_data = count_tweets_from_tab (tweets, nb_tweet);
 
 		//tab_floatx5_to_file (argv [2], frq_tab, charsetLen, frqLastCharWord, 26, frqFirstCharWord, 26, frqTwoConsecutiveLetter, 676, hog_tab, HOG_SIZE, nb_tweet, nb_data, result);
-		tab_floatx5_to_file (argv [2], frq_tab, charsetLen, frqFirstCharWord, 26, frqPrevLastCharWord, 26, frqLastCharWord, 26,  frqTwoConsecutiveLetter, 676, nb_tweet, nb_data, result);
+		if (argc == 5)
+			tab_floatx5_to_file (argv [2], frq_tab, charsetLen, frqFirstCharWord, 26, frqPrevLastCharWord, 26, frqLastCharWord, 26,  frqTwoConsecutiveLetter, 676, nb_tweet, nb_data, result);
+		else
+			tab_floatx5_to_file_withNULL (argv [2], frq_tab, charsetLen, frqFirstCharWord, 26, frqPrevLastCharWord, 26, frqLastCharWord, 26,  frqTwoConsecutiveLetter, 676, nb_tweet, nb_data, result);
 		//tab_floatx4_to_file (argv [2], frq_tab, charsetLen, frqLastCharWord, 26, frqFirstCharWord, 26, frqTwoConsecutiveLetter, 676, nb_tweet, nb_data, result);
 		//tab_floatx4_to_file (argv [2], frq_tab, charsetLen, frqLastCharWord, 26, frqFirstCharWord, 26, hog_tab, HOG_SIZE, nb_tweet, nb_data, result);
 		//tab_floatx3_to_file (argv [2], frq_tab, charsetLen, frqLastCharWord, 26, frqFirstCharWord, 26, nb_tweet, nb_data, result);
@@ -110,7 +113,7 @@ printf ("Nb tweet: %d\n", nb_tweet);
 		float **hog_tab = create_hog(tweets, nb_tweet);
 		float **frqTwoConsecutiveLetter = getProbTwoConsecutiveLetter (tweets, nb_tweet);
 
-		tab_floatx5_to_file (argv [2], frq_tab, charsetLen, frqFirstCharWord, 26, frqPrevLastCharWord, 26, frqLastCharWord, 26,  								frqTwoConsecutiveLetter, 676, nb_tweet, nb_tweet, "");
+		tab_floatx5_to_file_withNULL (argv [2], frq_tab, charsetLen, frqFirstCharWord, 26, frqPrevLastCharWord, 26, frqLastCharWord, 26,  frqTwoConsecutiveLetter, 676, nb_tweet, nb_tweet, "");
 
 		free (charset);
 		free_2d_tab ( (void **) tweets, nb_tweet);
@@ -180,14 +183,14 @@ int count_tweets_from_file (char *file_name)
 {
 	FILE *file = fopen (file_name, "r+");
 	int nb_tweet = 0;
-	char *tweet = malloc (sizeof (char)*CHAR_MAX_PER_TWEET);
+	char c;
 
-	while ( fgets (tweet, CHAR_MAX_PER_TWEET, file) != NULL )
+	while ( (c = fgetc (file)) != EOF )
 	{
-		nb_tweet++;
+		if (c == '\n')
+			nb_tweet++;
 	}
 
-	free (tweet);
 	fclose (file);
 
 	return nb_tweet;
@@ -261,7 +264,7 @@ float *getFrqFirstCharWordPerLine (char *line)
 		}
 	}
 
-	if (nb_char != 0)
+	if (nb_char > 0)
 	{
 		for (i=0; i < 26; i++)
 			frq [i] /= nb_char;
@@ -330,7 +333,7 @@ float *getFrqLastCharWordPerLine (char *line)
 		}
 	}
 
-	if (nb_char != 0)
+	if (nb_char > 0)
 	{
 		for (i=0; i < 26; i++)
 			frq [i] /= nb_char;
@@ -406,7 +409,7 @@ float *getFrqPrevLastCharWordPerLine (char *line)
 		}
 	}
 
-	if (nb_char != 0)
+	if (nb_char > 0)
 	{
 		for (i=0; i < 26; i++)
 			frq [i] /= nb_char;
@@ -599,9 +602,10 @@ float * countFrqInt (int *string, int* charset, int charsetLen)
 		}
 	}
 
-	for (i=0; i < charsetLen; i++)
+	if (nb_char > 0)
 	{
-		frq_char [i] /= nb_char;
+		for (i=0; i < charsetLen; i++)
+			frq_char [i] /= nb_char;
 	}
 
 	//normalize (frq_char, charsetLen);
