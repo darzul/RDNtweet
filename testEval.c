@@ -16,10 +16,12 @@ int main(int argc , char **argv) {
   fann_type *calc_out;
   int i;
 	
-  if (argc != 3) {
-    printf("usage : test evalParsed.txt network.net\n");
+  if (argc != 4) {
+    printf("usage : test evalParsed.txt network.net out.txt\n");
     return 0;
   }
+
+	FILE *out = fopen (argv[3], "w+");
 
   struct fann_train_data *testData = fann_read_train_from_file(argv[1]);
   struct fann *ann = ann = fann_create_from_file(argv[2]);
@@ -35,39 +37,49 @@ int main(int argc , char **argv) {
 
 	if (result == 0)
 	{
+		fprintf (out, "fr\n");
 		fr++;
 	}
 	else if (result == 1)
 	{
+		fprintf (out, "en\n");
 		en++;
 	}
 	else if (result == 2)
 	{
+		fprintf (out, "de\n");
 		de++;
 	}
 	else if (result == 3)
 	{
+		fprintf (out, "es\n");
 		es++;
 	}
 	else if (result == 4)
 	{
+		fprintf (out, "pt\n");
 		pt++;
 	}
 	else if (result == 5)
 	{
+		fprintf (out, "it\n");
 		it++;
 	}
 	else if (result == 6)
 	{
+		fprintf (out, "tr\n");
 		tr++;
 	}
 	else
 	{
+		fprintf (out, "no\n");
 		none++;
 	}
   }
 
   printf ("fr :%d\nen :%d\nde :%d\nes :%d\npt :%d\nit :%d\ntr :%d\nnone :%d\n", fr, en, de, es, pt, it, tr, none);
   fann_destroy(ann);
+  fclose (out);
+
   return 0;
 }
