@@ -8,7 +8,7 @@ if [ ! -n "$1" ]
 		exit 0
 fi
 
-if (($1 <= 0 || $1 >= 100))
+if (($1 < 0 || $1 >= 100))
 	then
 		echo % must be between 0 and 100
 		exit 0
@@ -29,63 +29,64 @@ nb_data=$(($nb_data_fr + $nb_data_en + $nb_data_de + $nb_data_es))
 nb_data=$(($nb_data + $nb_data_pt + $nb_data_it + $nb_data_tr))
 echo  "Total tweets: "$nb_data
 
+if [ $1 > 0 ]
+	then
+	echo "[Creating testing data]"
 
-echo "[Creating testing data]"
+	nb_data_fr_test=$(( ($nb_data_fr * $perc_test) / 100))
+	nb_data_en_test=$(( ($nb_data_en * $perc_test) / 100))
+	nb_data_de_test=$(( ($nb_data_de * $perc_test) / 100))
+	nb_data_es_test=$(( ($nb_data_es * $perc_test) / 100))
+	nb_data_pt_test=$(( ($nb_data_pt * $perc_test) / 100))
+	nb_data_it_test=$(( ($nb_data_it * $perc_test) / 100))
+	nb_data_tr_test=$(( ($nb_data_tr * $perc_test) / 100))
 
-nb_data_fr_test=$(( ($nb_data_fr * $perc_test) / 100))
-nb_data_en_test=$(( ($nb_data_en * $perc_test) / 100))
-nb_data_de_test=$(( ($nb_data_de * $perc_test) / 100))
-nb_data_es_test=$(( ($nb_data_es * $perc_test) / 100))
-nb_data_pt_test=$(( ($nb_data_pt * $perc_test) / 100))
-nb_data_it_test=$(( ($nb_data_it * $perc_test) / 100))
-nb_data_tr_test=$(( ($nb_data_tr * $perc_test) / 100))
-
-tail -n $nb_data_fr_test $DATA_DIR/trainData.fr.txt > $DATA_DIR/testingBase_fr.txt
-tail -n $nb_data_en_test $DATA_DIR/trainData.en.txt > $DATA_DIR/testingBase_en.txt
-tail -n $nb_data_de_test $DATA_DIR/trainData.de.txt > $DATA_DIR/testingBase_de.txt
-tail -n $nb_data_es_test $DATA_DIR/trainData.es.txt > $DATA_DIR/testingBase_es.txt
-tail -n $nb_data_pt_test $DATA_DIR/trainData.pt.txt > $DATA_DIR/testingBase_pt.txt
-tail -n $nb_data_it_test $DATA_DIR/trainData.it.txt > $DATA_DIR/testingBase_it.txt
-tail -n $nb_data_tr_test $DATA_DIR/trainData.tr.txt > $DATA_DIR/testingBase_tr.txt
-
-
-echo -e "\n[Parsing testing data]"
-
-echo -e "\t[FR]"
-./parser.exe $DATA_DIR/testingBase_fr.txt $DATA_DIR/testingBaseParsed_fr.txt fr charset.txt testing
-echo -e "\t[EN]"
-./parser.exe $DATA_DIR/testingBase_en.txt $DATA_DIR/testingBaseParsed_en.txt en charset.txt testing
-echo -e "\t[DE]"
-./parser.exe $DATA_DIR/testingBase_de.txt $DATA_DIR/testingBaseParsed_de.txt de charset.txt testing
-echo -e "\t[ES]"
-./parser.exe $DATA_DIR/testingBase_es.txt $DATA_DIR/testingBaseParsed_es.txt es charset.txt testing
-echo -e "\t[PT]"
-./parser.exe $DATA_DIR/testingBase_pt.txt $DATA_DIR/testingBaseParsed_pt.txt pt charset.txt testing
-echo -e "\t[IT]"
-./parser.exe $DATA_DIR/testingBase_it.txt $DATA_DIR/testingBaseParsed_it.txt it charset.txt testing
-echo -e "\t[TR]"
-./parser.exe $DATA_DIR/testingBase_tr.txt $DATA_DIR/testingBaseParsed_tr.txt tr charset.txt testing
-
-nb_input=$(head -n 1 $DATA_DIR/testingBaseParsed_fr.txt | cut -d ' ' -f2)
-nb_output=$(head -n 1 $DATA_DIR/testingBaseParsed_fr.txt | cut -d ' ' -f3)
+	tail -n $nb_data_fr_test $DATA_DIR/trainData.fr.txt > $DATA_DIR/testingBase_fr.txt
+	tail -n $nb_data_en_test $DATA_DIR/trainData.en.txt > $DATA_DIR/testingBase_en.txt
+	tail -n $nb_data_de_test $DATA_DIR/trainData.de.txt > $DATA_DIR/testingBase_de.txt
+	tail -n $nb_data_es_test $DATA_DIR/trainData.es.txt > $DATA_DIR/testingBase_es.txt
+	tail -n $nb_data_pt_test $DATA_DIR/trainData.pt.txt > $DATA_DIR/testingBase_pt.txt
+	tail -n $nb_data_it_test $DATA_DIR/trainData.it.txt > $DATA_DIR/testingBase_it.txt
+	tail -n $nb_data_tr_test $DATA_DIR/trainData.tr.txt > $DATA_DIR/testingBase_tr.txt
 
 
-echo -e "\n[Merging testing data]"
+	echo -e "\n[Parsing testing data]"
 
-nb_data_test=$(($nb_data_fr_test + $nb_data_en_test + $nb_data_de_test + $nb_data_es_test))
-nb_data_test=$(($nb_data_test + $nb_data_pt_test + $nb_data_it_test + $nb_data_tr_test))
-echo -e "\tTesting data: "$nb_data_test
+	echo -e "\t[FR]"
+	./parser.exe $DATA_DIR/testingBase_fr.txt $DATA_DIR/testingBaseParsed_fr.txt fr charset.txt testing
+	echo -e "\t[EN]"
+	./parser.exe $DATA_DIR/testingBase_en.txt $DATA_DIR/testingBaseParsed_en.txt en charset.txt testing
+	echo -e "\t[DE]"
+	./parser.exe $DATA_DIR/testingBase_de.txt $DATA_DIR/testingBaseParsed_de.txt de charset.txt testing
+	echo -e "\t[ES]"
+	./parser.exe $DATA_DIR/testingBase_es.txt $DATA_DIR/testingBaseParsed_es.txt es charset.txt testing
+	echo -e "\t[PT]"
+	./parser.exe $DATA_DIR/testingBase_pt.txt $DATA_DIR/testingBaseParsed_pt.txt pt charset.txt testing
+	echo -e "\t[IT]"
+	./parser.exe $DATA_DIR/testingBase_it.txt $DATA_DIR/testingBaseParsed_it.txt it charset.txt testing
+	echo -e "\t[TR]"
+	./parser.exe $DATA_DIR/testingBase_tr.txt $DATA_DIR/testingBaseParsed_tr.txt tr charset.txt testing
 
-echo $nb_data_test $nb_input $nb_output > $DATA_DIR/testingBaseParsed.txt
+	nb_input=$(head -n 1 $DATA_DIR/testingBaseParsed_fr.txt | cut -d ' ' -f2)
+	nb_output=$(head -n 1 $DATA_DIR/testingBaseParsed_fr.txt | cut -d ' ' -f3)
 
-tail -n +2 $DATA_DIR/testingBaseParsed_fr.txt >> $DATA_DIR/testingBaseParsed.txt
-tail -n +2 $DATA_DIR/testingBaseParsed_en.txt >> $DATA_DIR/testingBaseParsed.txt
-tail -n +2 $DATA_DIR/testingBaseParsed_de.txt >> $DATA_DIR/testingBaseParsed.txt
-tail -n +2 $DATA_DIR/testingBaseParsed_es.txt >> $DATA_DIR/testingBaseParsed.txt
-tail -n +2 $DATA_DIR/testingBaseParsed_pt.txt >> $DATA_DIR/testingBaseParsed.txt
-tail -n +2 $DATA_DIR/testingBaseParsed_it.txt >> $DATA_DIR/testingBaseParsed.txt
-tail -n +2 $DATA_DIR/testingBaseParsed_tr.txt >> $DATA_DIR/testingBaseParsed.txt
 
+	echo -e "\n[Merging testing data]"
+
+	nb_data_test=$(($nb_data_fr_test + $nb_data_en_test + $nb_data_de_test + $nb_data_es_test))
+	nb_data_test=$(($nb_data_test + $nb_data_pt_test + $nb_data_it_test + $nb_data_tr_test))
+	echo -e "\tTesting data: "$nb_data_test
+
+	echo $nb_data_test $nb_input $nb_output > $DATA_DIR/testingBaseParsed.txt
+
+	tail -n +2 $DATA_DIR/testingBaseParsed_fr.txt >> $DATA_DIR/testingBaseParsed.txt
+	tail -n +2 $DATA_DIR/testingBaseParsed_en.txt >> $DATA_DIR/testingBaseParsed.txt
+	tail -n +2 $DATA_DIR/testingBaseParsed_de.txt >> $DATA_DIR/testingBaseParsed.txt
+	tail -n +2 $DATA_DIR/testingBaseParsed_es.txt >> $DATA_DIR/testingBaseParsed.txt
+	tail -n +2 $DATA_DIR/testingBaseParsed_pt.txt >> $DATA_DIR/testingBaseParsed.txt
+	tail -n +2 $DATA_DIR/testingBaseParsed_it.txt >> $DATA_DIR/testingBaseParsed.txt
+	tail -n +2 $DATA_DIR/testingBaseParsed_tr.txt >> $DATA_DIR/testingBaseParsed.txt
+fi
 
 
 
@@ -150,3 +151,6 @@ tail -n +2 $DATA_DIR/trainingBaseParsed_es.txt >> $DATA_DIR/trainingBaseParsed.t
 tail -n +2 $DATA_DIR/trainingBaseParsed_pt.txt >> $DATA_DIR/trainingBaseParsed.txt
 tail -n +2 $DATA_DIR/trainingBaseParsed_it.txt >> $DATA_DIR/trainingBaseParsed.txt
 tail -n +2 $DATA_DIR/trainingBaseParsed_tr.txt >> $DATA_DIR/trainingBaseParsed.txt
+
+echo -e "\n[Parsing eval Data]"
+	./parser.exe Eval/eval.txt Eval/evalParsed.txt charset.txt

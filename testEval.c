@@ -25,7 +25,7 @@ int main(int argc , char **argv) {
   struct fann *ann = ann = fann_create_from_file(argv[2]);
   int output_size = fann_get_num_output(ann);
   int result;
-  int fr=0, en=0, de=0, es=0, pt=0, it=0, tr=0, error=0;
+  int fr=0, en=0, de=0, es=0, pt=0, it=0, tr=0, none=0;
 
   for(i=0;i<testData->num_data ;i++) {
     // calcul du résultat de la prédiction
@@ -37,37 +37,37 @@ int main(int argc , char **argv) {
 	{
 		fr++;
 	}
-	else if (result == 0)
+	else if (result == 1)
 	{
 		en++;
 	}
-	else if (result == 1)
+	else if (result == 2)
 	{
 		de++;
 	}
-	else if (result == 2)
+	else if (result == 3)
 	{
 		es++;
 	}
-	else if (result == 3)
+	else if (result == 4)
 	{
 		pt++;
 	}
-	else if (result == 4)
+	else if (result == 5)
 	{
 		it++;
 	}
-	else if (result == 5)
+	else if (result == 6)
 	{
 		tr++;
 	}
 	else
 	{
-		error++;
+		none++;
 	}
   }
 
-  printf ("fr :%d\nen :%d\nde :%d\nes :%d\npt :%d\nit :%d\ntr :%d\n", fr, en, de, es, pt, it, tr);    
+  printf ("fr :%d\nen :%d\nde :%d\nes :%d\npt :%d\nit :%d\ntr :%d\nnone :%d\n", fr, en, de, es, pt, it, tr, none);
   fann_destroy(ann);
   return 0;
 }

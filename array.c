@@ -110,6 +110,27 @@ void tab_string_to_file (FILE *file, char **tab, int tab_len)
 	}
 }
 
+void tab_floatx1_to_file (char * file_name, float **tab, int tabLen, int nbr_tweet, int nbr_data, int nb_output, char *result)
+{
+	int i, j;
+
+	FILE *file = fopen (file_name, "w+");
+
+	fprintf (file, "%d %d %d\n", nbr_data, tabLen, nb_output);
+	
+		for (i=0; i < nbr_tweet; i++)
+		{
+			if (tab [i] != NULL)
+			{
+				for (j=0; j < tabLen ; j++)
+					fprintf (file, "%f ", tab[i][j]);
+		
+				fprintf (file, "%s\n", result);
+			}
+		}
+	fclose(file);
+}
+
 void tab_floatx2_to_file (char * file_name, float **tab1, int tab1Len, float **tab2, int tab2Len, int nbr_tweet, int nbr_data,  char *result)
 {	
 	int i, j;
